@@ -2,10 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Api, BASE_URL } from '../../../components/common/Api/api';
 import Card from '../../../components/common/Card';
-import { ArrowLeft, Receipt, Image as ImageIcon, CheckCircle2, Sparkles, FileText, Tag, CreditCard, Calendar, Clock } from 'lucide-react';
-
-import Asidebar from "../Asidebar";
-import Navbar from "../Navbar";
+import { ArrowLeft, Receipt, CheckCircle2, Sparkles, FileText, Tag, CreditCard, Calendar, Clock } from 'lucide-react';
 
 const ExpenseShow = () => {
   const { id } = useParams();
@@ -25,18 +22,7 @@ const ExpenseShow = () => {
   }, [id]);
 
   return (
-    <div className="flex h-screen bg-[#F8FAFC] dark:bg-[#020617] overflow-hidden transition-all duration-700">
-      <Asidebar />
-
-      <div className="flex-1 flex flex-col overflow-hidden relative">
-        {/* Background Decorative Glows */}
-        <div className="absolute top-[-5%] right-[-5%] w-[400px] h-[400px] bg-rose-500/[0.05] blur-[100px] rounded-full pointer-events-none" />
-        <div className="absolute bottom-[-5%] left-[-5%] w-[300px] h-[300px] bg-amber-500/[0.05] blur-[80px] rounded-full pointer-events-none" />
-
-        <Navbar />
-
-        {/* मुख्य बदल: इथे pb-20 दिला आहे जेणेकरून कार्ड खाली टेकणार नाही */}
-        <main className="flex-1 p-6 md:p-10 overflow-y-auto relative z-10 flex flex-col items-center pb-20">
+    <div className="flex flex-col items-center w-full relative z-10 pb-20">
           
           {/* Page Header */}
           <div className="w-full max-w-lg flex justify-between items-end mb-10">
@@ -93,25 +79,6 @@ const ExpenseShow = () => {
               </div>
             </div>
 
-            {/* Digital Evidence (Image) */}
-            {expense?.ex_image && (
-              <div className="mt-12 pt-10 border-t border-dashed border-slate-200 dark:border-white/10">
-                <div className="flex items-center gap-2 mb-6">
-                  <ImageIcon size={16} className="text-rose-500" />
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Digital Audit Evidence</p>
-                </div>
-                <div className="group relative rounded-[2.5rem] overflow-hidden border-4 border-white dark:border-slate-800 shadow-xl transition-transform hover:scale-[1.02]">
-                  <img
-                    src={`${BASE_URL}/${expense.ex_image}`}
-                    alt="Evidence"
-                    className="w-full h-auto max-h-64 object-contain bg-slate-50 dark:bg-slate-900 transition-transform duration-1000 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                     <span className="text-white text-[9px] font-black uppercase tracking-widest border border-white/40 px-4 py-2 rounded-full">View Document</span>
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* Footer */}
             <div className="mt-12 text-center border-t border-dashed border-slate-200 dark:border-white/10 pt-8">
@@ -122,8 +89,6 @@ const ExpenseShow = () => {
               <div className="text-[8px] font-black text-slate-300 dark:text-slate-700 uppercase tracking-widest italic">SmartWallet Security Architecture v2.0</div>
             </div>
           </Card>
-        </main>
-      </div>
     </div>
   );
 };

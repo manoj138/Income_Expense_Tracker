@@ -1,73 +1,60 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../config/sqliteDB");
+const mongoose = require("mongoose");
 
-const Income = sequelize.define(
-    'Income',
+const incomeSchema = new mongoose.Schema(
     {
-        income_id: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            autoIncrement: true
-        },
         income_source: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                notEmpty: {
-                    msg: "source is required"
-                }
-            }
+            type: String,
+            required: [true, "source is required"]
         },
         income_amount: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-             validate: {
-    notNull: { msg: "amount is required" },
-    isFloat: { msg: "amount must be number" }
-  }
+            type: Number,
+            required: [true, "amount is required"]
         },
         income_method: {
-            type: DataTypes.ENUM("Cash",
-                "UPI",
-                "Net Banking",
-                "Debit Card",
-                "Credit Card"),
-            allowNull: false,
-            defaultValue: "Cash",
-            validate: {
-    notEmpty: { msg: "method is required" }
-  }
-        },
-        income_image: {
-            type: DataTypes.STRING,
-            allowNull: true,
+            type: String,
+            enum: ["Cash", "UPI", "Net Banking", "Debit Card", "Credit Card"],
+            default: "Cash",
+            required: [true, "method is required"]
         },
         income_date: {
-            type: DataTypes.DATEONLY,
-            allowNull: false,
-            validate: {
-                notNull: { msg: "Date is required" },
-                isDate: { msg: "Invalid date" }
-            }
+            type: Date,
+            required: [true, "Date is required"]
         },
-
         income_time: {
-            type: DataTypes.TIME,
-            allowNull: false,
-            validate: {
-        notNull: { msg: "Time is required" },
-        notEmpty: { msg: "Time is required" } 
-      }
+            type: String,
+            required: [true, "Time is required"]
         },
         fk_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
         }
-    }, {
-    tableName: "incomeData",
-    timestamps: true
-}
-)
-Income.sync();
+    },
+    {
+        timestamps: true,
+        collection: 'incomeData'
+    }
+);
 
-module.exports = Income;
+incomeSchema.virtual('income_id').get(function () {
+    return this._id.toString();
+});
+
+const schemaTransform = (_, ret) => {
+    delete ret._id;
+    return ret;
+};
+
+incomeSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: schemaTransform
+});
+
+incomeSchema.set('toObject', {
+    virtuals: true,
+    versionKey: false,
+    transform: schemaTransform
+});
+
+module.exports = mongoose.model("Income", incomeSchema);

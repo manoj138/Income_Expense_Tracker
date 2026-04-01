@@ -55,7 +55,7 @@ const WaveChart = () => {
   };
 
   return (
-    <div className="group relative overflow-hidden bg-white/50 dark:bg-slate-900/40 backdrop-blur-[40px] border border-white dark:border-white/5 rounded-[2.5rem] p-8 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] transition-all duration-700">
+    <div className="group relative overflow-hidden bg-white/50 dark:bg-slate-900/40 backdrop-blur-[40px] border border-white dark:border-white/5 rounded-[3.5rem] p-10 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] transition-all duration-700">
       
       {/* Header Section */}
       <div className="flex justify-between items-center mb-10">

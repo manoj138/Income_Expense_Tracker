@@ -5,7 +5,6 @@ import Table from "../../../components/common/Table";
 import {
   Trash2,
   Plus,
-  ArrowLeft,
   Edit3,
   Eye,
   IndianRupee,
@@ -14,25 +13,21 @@ import {
   Filter,
   X,
 } from "lucide-react";
-import Button from "../../../components/common/Button";
 import { useToast } from "../../../components/common/Toast";
-import Navbar from "../Navbar";
-import Asidebar from "../Asidebar";
 import Pagination from "../../../components/common/Pagination";
 import ConfirmModal from "../../../components/common/ConfirmModal";
 import Input from "../../../components/common/Input";
+import PageLoader from "../../../components/common/PageLoader";
 
 const IncomesIndex = () => {
   const [incomeData, setIncomeData] = useState([]);
   const { addToast } = useToast();
   const [deleteId, setDeleteId] = useState(null);
   const [open, setOpen] = useState(false);
-
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalAmounts, setTotalAmounts] = useState();
-
+  const [totalAmounts, setTotalAmounts] = useState(0);
   const [search, setSearch] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -53,7 +48,7 @@ const IncomesIndex = () => {
       header: "Source",
       accessor: "income_source",
       render: (val) => (
-        <span className="font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tight">
+        <span className="font-bold uppercase tracking-tight text-slate-700 dark:text-slate-200">
           {val}
         </span>
       ),
@@ -62,8 +57,9 @@ const IncomesIndex = () => {
       header: "Amount",
       accessor: "income_amount",
       render: (val) => (
-        <span className="flex items-center gap-1 font-black text-emerald-600 dark:text-emerald-400 text-lg">
-          ₹{Number(val).toLocaleString()}
+        <span className="flex items-center gap-1 text-lg font-black text-emerald-600 dark:text-emerald-400">
+          <IndianRupee size={16} />
+          {Number(val).toLocaleString("en-IN")}
         </span>
       ),
     },
@@ -71,7 +67,7 @@ const IncomesIndex = () => {
       header: "Method",
       accessor: "income_method",
       render: (val) => (
-        <span className="font-black uppercase text-[10px] text-slate-500">
+        <span className="text-[10px] font-black uppercase text-slate-500">
           {val}
         </span>
       ),
@@ -88,21 +84,21 @@ const IncomesIndex = () => {
     {
       header: "Action",
       accessor: "income_id",
-      render: (income_id) => (
-        <div className="flex gap-2 items-center">
-          <Link to={`/admin/income/show/${income_id}`}>
-            <div className="p-2 hover:bg-blue-50 dark:hover:bg-blue-500/10 text-blue-600 rounded-xl transition-colors">
+      render: (incomeId) => (
+        <div className="flex items-center gap-2">
+          <Link to={`/admin/income/show/${incomeId}`}>
+            <div className="rounded-xl p-2 text-blue-600 transition-colors hover:bg-blue-50 dark:hover:bg-blue-500/10">
               <Eye size={18} />
             </div>
           </Link>
-          <Link to={`/admin/income/edit/${income_id}`}>
-            <div className="p-2 hover:bg-amber-50 dark:hover:bg-amber-500/10 text-amber-600 rounded-xl transition-colors">
+          <Link to={`/admin/income/edit/${incomeId}`}>
+            <div className="rounded-xl p-2 text-amber-600 transition-colors hover:bg-amber-50 dark:hover:bg-amber-500/10">
               <Edit3 size={18} />
             </div>
           </Link>
           <button
-            onClick={() => setDeleteId(income_id)}
-            className="p-2 hover:bg-rose-50 dark:hover:bg-rose-500/10 text-rose-600 rounded-xl transition-colors"
+            onClick={() => setDeleteId(incomeId)}
+            className="rounded-xl p-2 text-rose-600 transition-colors hover:bg-rose-50 dark:hover:bg-rose-500/10"
           >
             <Trash2 size={18} />
           </button>
@@ -118,7 +114,7 @@ const IncomesIndex = () => {
         params: { page, size: pageSize, search, startDate, endDate, status },
       });
       const responseData = res.data.data;
-      setTotalAmounts(responseData.totalAmount);
+      setTotalAmounts(responseData.totalAmount || 0);
       setIncomeData(responseData.items || []);
       setTotalPages(responseData.totalPages || 1);
     } catch (error) {
@@ -145,159 +141,143 @@ const IncomesIndex = () => {
     }
   };
 
-  // useEffect(() => {
-  //   setCurrentPage(1); 
-  //   fetchIncome();
-  // }, []);
-
   useEffect(() => {
     fetchIncome(currentPage);
   }, [currentPage, search, startDate, endDate, status]);
 
+  if (loading) {
+    return <PageLoader />;
+  }
+
   return (
-    <div className="flex h-screen bg-[#F8FAFC] dark:bg-[#020617] overflow-hidden font-sans">
-      <Asidebar />
+    <>
+      <div className="mb-8 flex flex-col items-start justify-between gap-5 xl:flex-row xl:items-end">
+        <div>
+          <div className="mb-2 flex items-center gap-3 text-blue-600">
+            <IndianRupee size={20} className="animate-bounce" />
+            <span className="text-[10px] font-black uppercase tracking-[0.4em]">
+              Financial Records
+            </span>
+          </div>
+          <h1 className="text-2xl font-[1000] tracking-tighter text-slate-900 sm:text-4xl md:text-5xl dark:text-white">
+            Income <span className="italic text-blue-600">Streams</span>
+          </h1>
+        </div>
 
-      <div className="flex-1 flex flex-col overflow-hidden relative">
-        <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-blue-500/[0.03] dark:bg-blue-600/10 blur-[120px] rounded-full pointer-events-none" />
-        <Navbar />
+        <div className="flex w-full flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center xl:w-auto xl:justify-end">
+          <div className="w-full sm:w-48 md:w-64">
+            <Input
+              icon={Search}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search..."
+              className="rounded-2xl border-slate-200 bg-white text-xs font-bold dark:border-white/5 dark:bg-slate-900"
+            />
+          </div>
 
-        <main className="flex-1 p-6 md:p-10 overflow-y-auto relative z-10">
-          {/* Header & Filter Controls Area */}
-          <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end mb-10 gap-6">
-            <div>
-              <div className="flex items-center gap-3 text-blue-600 mb-2">
-                <IndianRupee size={20} className="animate-bounce" />
-                <span className="text-[10px] font-black uppercase tracking-[0.4em]">
-                  Financial Records
-                </span>
-              </div>
-              <h1 className="text-4xl md:text-5xl font-[1000] text-slate-900 dark:text-white tracking-tighter">
-                Income <span className="italic text-blue-600">Streams</span>
-              </h1>
-            </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setOpen(!open)}
+              className={`rounded-2xl border p-3 shadow-sm transition-all ${
+                open
+                  ? "border-blue-600 bg-blue-600 text-white"
+                  : "border-slate-200 bg-white text-slate-400 hover:text-blue-600 dark:border-white/5 dark:bg-slate-900"
+              }`}
+            >
+              <Filter size={20} />
+            </button>
 
-            <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto">
-              <div className="flex-1 md:w-64">
-                <Input
-                  icon={Search}
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Quick Search..."
-                  className="bg-white dark:bg-slate-900 border-slate-200 dark:border-white/5 text-xs font-bold rounded-2xl"
+            <Link
+              to="/admin/income/create"
+              className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-blue-600 px-6 py-3 font-bold text-white transition-all shadow-[0_10px_20px_-5px_rgba(37,99,235,0.4)] hover:bg-blue-700 sm:flex-none"
+            >
+              <Plus size={18} /> <span className="sm:hidden lg:inline">Create New</span><span className="hidden sm:inline lg:hidden">Add</span>
+            </Link>
+          </div>
+
+          {open && (
+            <div className="flex w-full flex-col gap-2 rounded-2xl border border-slate-200 bg-white/80 p-3 backdrop-blur-md animate-in fade-in zoom-in duration-300 dark:border-white/10 dark:bg-slate-900/80 sm:w-auto sm:flex-row sm:items-center sm:gap-4 sm:p-2">
+              <div className="flex flex-1 items-center gap-2 sm:flex-none">
+                <span className="text-[10px] font-black uppercase text-slate-400">From</span>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-full bg-transparent text-[11px] font-bold text-slate-600 outline-none dark:text-slate-300 sm:w-auto"
                 />
               </div>
-
-              <button
-                onClick={() => setOpen(!open)}
-                className={`p-3 border rounded-2xl transition-all shadow-sm ${
-                  open
-                    ? "bg-blue-600 border-blue-600 text-white"
-                    : "bg-white dark:bg-slate-900 border-slate-200 dark:border-white/5 text-slate-400 hover:text-blue-600"
-                }`}
-              >
-                <Filter size={20} />
-              </button>
-
-              {open && (
-                <div className="flex items-center gap-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-1.5 border border-slate-200 dark:border-white/10 rounded-2xl animate-in fade-in zoom-in duration-300">
-                  <input
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="bg-transparent text-[10px] font-bold outline-none text-slate-600 dark:text-slate-300 px-2"
-                  />
-                  <div className="w-[1px] h-4 bg-slate-200 dark:bg-white/10" />
-                  <input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="bg-transparent text-[10px] font-bold outline-none text-slate-600 dark:text-slate-300 px-2"
-                  />
-                  {(startDate || endDate) && (
-                    <button
-                      onClick={() => {
-                        setStartDate("");
-                        setEndDate("");
-                      }}
-                      className="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg transition-colors"
-                    >
-                      <X size={14} />
-                    </button>
-                  )}
-                </div>
-              )}
-
-              <div className="flex gap-3">
-                {/* <Link to="/admin/dashboard" className="hidden md:flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 text-slate-600 dark:text-slate-400 rounded-2xl font-bold hover:bg-slate-50 transition-all shadow-sm">
-                  <ArrowLeft size={18} /> Back
-                </Link> */}
-                <Link
-                  to="/admin/income/create"
-                  className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-[0_10px_20px_-5px_rgba(37,99,235,0.4)]"
+              <div className="h-[1px] w-full bg-slate-200 dark:bg-white/10 sm:h-4 sm:w-[1px]" />
+              <div className="flex flex-1 items-center gap-2 sm:flex-none">
+                <span className="text-[10px] font-black uppercase text-slate-400">To</span>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="w-full bg-transparent text-[11px] font-bold text-slate-600 outline-none dark:text-slate-300 sm:w-auto"
+                />
+              </div>
+              {(startDate || endDate) && (
+                <button
+                  onClick={() => {
+                    setStartDate("");
+                    setEndDate("");
+                  }}
+                  className="rounded-lg p-1.5 text-rose-500 transition-colors hover:bg-rose-50 dark:hover:bg-rose-500/10"
                 >
-                  <Plus size={18} /> Create New
-                </Link>
-              </div>
+                  <X size={14} />
+                </button>
+              )}
             </div>
-          </div>
-
-          {/* Table Container */}
-          <div className="bg-white/80 dark:bg-slate-900/40 backdrop-blur-[40px] border border-white dark:border-white/5 rounded-[2.5rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] overflow-hidden">
-            <div className="p-8 border-b border-slate-100 dark:border-white/5 flex justify-between items-center">
-              <h2 className="flex items-center gap-3 text-lg font-bold text-slate-800 dark:text-white">
-                <LayoutGrid size={20} className="text-blue-600" /> Recent
-                Transactions
-              </h2>
-              <div
-                className="inline-flex items-center gap-3 px-6 py-3 
-                       bg-emerald-500/10 dark:bg-emerald-500/20 
-                        backdrop-blur-xl 
-                     border border-emerald-500/20 
-                     rounded-2xl shadow-sm"
-              >
-                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
-                  Total Income
-                </span>
-
-                <span className="text-lg font-[1000] text-emerald-600 dark:text-emerald-400">
-                  ₹{Number(totalAmounts).toLocaleString()}
-                </span>
-              </div>
-              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-50 dark:bg-slate-800/50 px-4 py-2 rounded-full">
-                Total Records: {incomeData.length}
-              </div>
-            </div>
-
-            <div className="p-4 overflow-x-auto">
-              <Table columns={columns} data={incomeData} hoverable />
-            </div>
-          </div>
-
-          {!loading && incomeData.length > 0 && totalPages > 1 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
           )}
-
-          <ConfirmModal
-            isOpen={!!deleteId}
-            onClose={() => setDeleteId(null)}
-            onConfirm={deleteHandler}
-            title="Delete Income"
-            message="Are you sure you want to delete this income record?"
-          />
-
-          <div className="mt-10 text-center opacity-30">
-            <p className="text-[9px] font-black uppercase tracking-[0.5em] text-slate-500">
-              Secure Financial Ledger Protocol v2.0
-            </p>
-          </div>
-        </main>
+        </div>
       </div>
-    </div>
+
+      <div className="overflow-hidden rounded-[2.5rem] border border-white bg-white/80 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] backdrop-blur-[40px] dark:border-white/5 dark:bg-slate-900/40">
+        <div className="flex flex-col gap-4 border-b border-slate-100 p-5 dark:border-white/5 sm:p-6 lg:flex-row lg:items-center lg:justify-between xl:p-8">
+          <h2 className="flex items-center gap-3 text-lg font-bold text-slate-800 dark:text-white">
+            <LayoutGrid size={20} className="text-blue-600" /> Recent Transactions
+          </h2>
+          <div className="flex flex-1 items-center gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 shadow-sm backdrop-blur-xl dark:bg-emerald-500/20 sm:flex-initial">
+            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
+              Total
+            </span>
+            <span className="flex items-center gap-1 text-lg font-[1000] text-emerald-600 dark:text-emerald-400">
+              <IndianRupee size={16} />
+              {Number(totalAmounts).toLocaleString("en-IN")}
+            </span>
+          </div>
+          <div className="hidden rounded-full bg-slate-50 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:bg-slate-800/50 sm:block">
+            Records: {incomeData.length}
+          </div>
+        </div>
+
+        <div className="p-4">
+          <Table columns={columns} data={incomeData} hoverable />
+        </div>
+      </div>
+
+      {!loading && incomeData.length > 0 && totalPages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      )}
+
+      <ConfirmModal
+        isOpen={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onConfirm={deleteHandler}
+        title="Delete Income"
+        message="Are you sure you want to delete this income record?"
+      />
+
+      <div className="mt-10 text-center opacity-30">
+        <p className="text-[9px] font-black uppercase tracking-[0.5em] text-slate-500">
+          Secure Financial Ledger Protocol v2.0
+        </p>
+      </div>
+    </>
   );
 };
 

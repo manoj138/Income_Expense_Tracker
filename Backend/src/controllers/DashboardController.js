@@ -1,65 +1,64 @@
 const { handle200 } = require("../helper/successHandler");
-const { formatSequelizeError } = require("../helper/errorHandler");
+const { formatError } = require("../helper/mongoError");
 const Income = require("../model/IncomeModel");
-const sequelize = require("../config/sqliteDB");
 const Expense = require("../model/ExpenseModel");
+const mongoose = require('mongoose');
 
 const dashBoard = async (req, res) => {
   try {
+    const userId = new mongoose.Types.ObjectId(req.user.id);
 
-    const userId = req.user.id
-    const totalAmountex = await Expense.sum("ex_amount", {
-      where: { fkex_id: userId },
-    }) || 0;
+    const totalAmountexResult = await Expense.aggregate([
+      { $match: { fkex_id: userId } },
+      { $group: { _id: null, total: { $sum: "$ex_amount" } } }
+    ]);
+    const totalAmountex = totalAmountexResult.length > 0 ? totalAmountexResult[0].total : 0;
 
-    const totalAmountin = await Income.sum("income_amount", {
-      where: { fk_id: userId },
-    }) || 0;
+    const totalAmountinResult = await Income.aggregate([
+      { $match: { fk_id: userId } },
+      { $group: { _id: null, total: { $sum: "$income_amount" } } }
+    ]);
+    const totalAmountin = totalAmountinResult.length > 0 ? totalAmountinResult[0].total : 0;
 
-    const netBalance = totalAmountin - totalAmountex; 
+    const netBalance = totalAmountin - totalAmountex;
 
+    const incomeByDate = await Income.aggregate([
+      { $match: { fk_id: userId } },
+      { $group: { _id: "$income_date", amount: { $sum: "$income_amount" } } },
+      { $sort: { _id: 1 } }
+    ]);
 
-    const income = await Income.findAll({
-        attributes:[
-            'income_date',
-            [sequelize.fn("SUM", sequelize.col("income_amount")), "amount"]
-        ],
-        where:{fk_id : userId},
-        group:['income_date'],
-    });
-
-     const expense = await Expense.findAll({
-        attributes:[
-            'ex_date',
-            [sequelize.fn("SUM", sequelize.col("ex_amount")), "amount"]
-        ],
-        where:{fkex_id : userId},
-        group:['ex_date'],
-    });
+    const expenseByDate = await Expense.aggregate([
+      { $match: { fkex_id: userId } },
+      { $group: { _id: "$ex_date", amount: { $sum: "$ex_amount" } } },
+      { $sort: { _id: 1 } }
+    ]);
 
     const chartData = [];
 
-    income.forEach((i)=>{
+    incomeByDate.forEach((i) => {
+      chartData.push({
+        date: i._id,
+        income: i.amount,
+        expense: 0
+      });
+    });
+
+    expenseByDate.forEach((e) => {
+      const found = chartData.find((d) => d.date.toString() === e._id.toString());
+      if (found) {
+        found.expense = e.amount;
+      } else {
         chartData.push({
-            date: i.income_date,
-            income: Number(i.dataValues.amount),
-            expense:0
-        })
-    })
+          date: e._id,
+          income: 0,
+          expense: e.amount
+        });
+      }
+    });
 
-    expense.forEach((e)=>{
-        const found = chartData.find((d)=>d.date === e.ex_date)
-
-        if(found){
-            found.expense = Number(e.dataValues.amount);
-        }else{
-            chartData.push({
-                date:e.ex_date,
-                income:0,
-                expense: Number(e.dataValues.amount)
-            })
-        }
-    })
+    // Sort chartData by date
+    chartData.sort((a, b) => new Date(a.date) - new Date(b.date));
 
     return handle200(res, {
       income: totalAmountin,
@@ -69,8 +68,8 @@ const dashBoard = async (req, res) => {
     }, "Dashboard data fetched");
 
   } catch (error) {
-    return formatSequelizeError(res, error);
+    return formatError(res, error);
   }
 };
 
-module.exports = {dashBoard};
+module.exports = { dashBoard };

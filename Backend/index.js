@@ -1,9 +1,10 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 4000;
 const cors = require('cors');
 const path = require('path');
+const connectDB = require('./src/config/mongoDB');
 
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.json());
@@ -24,6 +25,16 @@ app.get('/', (req, res) => {
   res.send('Hello World! Express server is running.');
 });
 
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
-});
+const startServer = async () => {
+  try {
+    await connectDB();
+    app.listen(port, () => {
+      console.log(`Example app listening at http://localhost:${port}`);
+    });
+  } catch (error) {
+    console.error('Server startup failed:', error.message);
+    process.exit(1);
+  }
+};
+
+startServer();

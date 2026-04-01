@@ -3,11 +3,8 @@ import { Api } from "../../../components/common/Api/api";
 import Input from "../../../components/common/Input";
 import Button from "../../../components/common/Button";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import FileUpload from "../../../components/common/FileUpload";
 import { useToast } from "../../../components/common/Toast";
-import ThemeToggle from "../../../components/common/ThemeToggle";
-import { ArrowLeft, Save, Fingerprint, Camera, User, Mail } from "lucide-react";
-
+import { ArrowLeft, Save, Fingerprint, User, Mail } from "lucide-react";
 const ProfileEdit = () => {
   const { addToast } = useToast();
   const [user, setUser] = useState({});
@@ -37,14 +34,9 @@ const ProfileEdit = () => {
   useEffect(() => { fetchUser(); }, []);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#020617] flex flex-col items-center justify-center p-6 transition-all duration-700 relative overflow-hidden">
-      
-      {/* Background Mesh (Luxury Blobs) */}
-      <div className="absolute top-[-10%] left-[-10%] w-[400px] h-[400px] bg-blue-500/5 blur-[120px] rounded-full" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-indigo-500/5 blur-[120px] rounded-full" />
-
+    <div className="relative flex min-h-full w-full flex-col items-center justify-start p-4 md:p-6 transition-all duration-700">
       {/* --- Symmetric Header Layout --- */}
-      <div className="w-full  flex justify-between items-center mb-6 relative z-10 animate-in fade-in slide-in-from-top-4 duration-700">
+      <div className="w-full max-w-md flex justify-between items-center mb-6 relative z-10 animate-in fade-in slide-in-from-top-4 duration-700 pt-4 md:pt-10">
         {/* Left Side: Back Button */}
         <Link 
           to="/admin/profile" 
@@ -53,15 +45,10 @@ const ProfileEdit = () => {
           <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> 
           Back
         </Link>
-
-        {/* Right Side: Theme Toggle */}
-        <div className="p-1 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md border border-slate-200 dark:border-white/5 rounded-2xl shadow-sm">
-          <ThemeToggle />
-        </div>
       </div>
 
       {/* --- CENTERED FORM CARD --- */}
-      <div className="w-full max-w-md relative z-10 animate-in fade-in zoom-in-95 duration-700">
+      <div className="w-full max-w-md relative z-10 animate-in fade-in zoom-in-95 duration-700 pb-8">
         <form onSubmit={submitHandler} className="bg-white/80 dark:bg-slate-900/60 backdrop-blur-3xl rounded-[3rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.15)] border border-white dark:border-white/5 overflow-hidden">
           
           <div className="p-8 relative">
@@ -72,9 +59,6 @@ const ProfileEdit = () => {
                     <div className="h-20 w-20 rounded-[1.5rem] overflow-hidden border-[3px] border-white dark:border-slate-900 flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-2xl font-black text-blue-600 transition-transform group-hover/avatar:scale-105 duration-500">
                         {user.name?.charAt(0).toUpperCase()}
                     </div>
-                  </div>
-                  <div className="absolute -bottom-1 -right-1 h-7 w-7 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 flex items-center justify-center text-blue-600">
-                    <Camera size={12} />
                   </div>
                </div>
                <h2 className="text-2xl font-[1000] text-slate-900 dark:text-white tracking-tighter uppercase italic">Update Identity</h2>
@@ -110,14 +94,6 @@ const ProfileEdit = () => {
                 />
               </div>
 
-              {/* Photo Upload Area */}
-              <div className="space-y-2 pt-1">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-4">Profile Media</label>
-                <div className="bg-slate-50 dark:bg-slate-800/20 p-5 rounded-[2rem] border-2 border-dashed border-slate-200 dark:border-white/5 hover:border-blue-500/40 transition-all text-center group">
-                  <FileUpload name={"user_image"} onChange={inputHandler} />
-                  <p className="mt-2 text-[8px] font-bold text-slate-400 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">PNG, JPG Up to 2MB</p>
-                </div>
-              </div>
             </div>
           </div>
 

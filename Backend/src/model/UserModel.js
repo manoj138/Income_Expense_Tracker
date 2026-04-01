@@ -1,95 +1,70 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../config/sqliteDB");
+const mongoose = require("mongoose");
 const { hashPassword } = require("../helper/authHelper");
 
-const User = sequelize.define(
-    "User",
+const userSchema = new mongoose.Schema(
     {
-        id: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            autoIncrement: true
-        },
         name: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                notEmpty: {
-                    msg: "Name is required"
-                }
-            }
+            type: String,
+            required: [true, "Name is required"],
         },
         user_name: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                notEmpty: {
-                    msg: "User Name is required"
-                }
-            }
+            type: String,
+            required: [true, "User Name is required"],
         },
         email: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: {
-                msg: "Email is already exist"
-            },
-            validate: {
-                notEmpty: {
-                    msg: "Email is required"
-                },
-                isEmail: {
-                    msg: "Please enter a valid email address"
-                }
-            }
+            type: String,
+            required: [true, "Email is required"],
+            unique: true,
+            lowercase: true,
+            match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email address']
         },
         password: {
-            type: DataTypes.STRING,
-            allowNull: true,
-            validate: {
-                customValidator(value) {
-                    if (this.isNewRecord) {
-                        if (!value) {
-                            throw new Error("Password is required");
-                        }
-                        if (value.length < 6) {
-                            throw new Error("Password must be at least 6 characters long");
-                        }
-                    } else {
-                        if (value && value.length < 6) {
-                            throw new Error("Password must be at least 6 characters long");
-                        }
-                    }
-                },
-            },
+            type: String,
+            required: [true, "Password is required"],
+            minlength: [6, "Password must be at least 6 characters long"]
         },
         status: {
-            type: DataTypes.ENUM('admin', 'user'),
-            allowNull: false,
-            defaultValue: 'user'
-        },
-        user_image: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-    }, {
-    tableName: 'users',
-    timestamps: true,
-    hooks: {
-        beforeCreate: async (user) => {
-            if (user.password) {
-                user.password = await hashPassword(user.password);
-            }
-        },
-        beforeUpdate: async (user) => {
-            if (user.changed('password')) {
-                user.password = await hashPassword(user.password);
-            }
+            type: String,
+            enum: ['admin', 'user'],
+            default: 'user'
         }
+    },
+    {
+        timestamps: true,
+        collection: 'users'
     }
-}
-)
-User.sync();
+);
 
-module.exports = User; 
+userSchema.virtual('user_id').get(function () {
+    return this._id.toString();
+});
+
+// Hash password before saving
+userSchema.pre('save', async function () {
+    if (!this.isModified('password')) {
+        return;
+    }
+
+    this.password = await hashPassword(this.password);
+});
+
+const schemaTransform = (_, ret) => {
+    delete ret._id;
+    delete ret.password;
+    return ret;
+};
+
+userSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: schemaTransform
+});
+
+userSchema.set('toObject', {
+    virtuals: true,
+    versionKey: false,
+    transform: schemaTransform
+});
+
+module.exports = mongoose.model("User", userSchema);
 

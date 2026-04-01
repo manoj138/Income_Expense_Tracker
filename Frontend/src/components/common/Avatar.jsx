@@ -37,16 +37,7 @@ const Avatar = ({
         bg-brand-100 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 font-bold
         border-2 border-white dark:border-slate-800 shadow-sm
       `}>
-        {src ? (
-          <img 
-            src={src} 
-            alt={alt} 
-            className="w-full h-full object-cover"
-            onError={(e) => { e.target.style.display = 'none'; }}
-          />
-        ) : (
-          <span>{initials || alt.charAt(0).toUpperCase()}</span>
-        )}
+        <span>{initials || alt.charAt(0).toUpperCase()}</span>
       </div>
 
       {status && (

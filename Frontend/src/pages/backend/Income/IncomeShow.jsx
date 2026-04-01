@@ -12,11 +12,9 @@ import {
   Tag,
   Sparkles,
   Receipt,
-  Image as ImageIcon,
   ShieldCheck
 } from "lucide-react";
-import Asidebar from "../Asidebar";
-import Navbar from "../Navbar";
+import PageLoader from "../../../components/common/PageLoader";
 
 const IncomeShow = () => {
   const { id } = useParams();
@@ -39,24 +37,11 @@ const IncomeShow = () => {
   }, [id]);
 
   if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-[#F8FAFC] dark:bg-[#020617]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
-      </div>
-    );
+    return <PageLoader ringColor="border-emerald-500" iconColor="text-emerald-500" className="h-[60vh]" />;
   }
 
   return (
-    <div className="flex h-screen bg-[#F8FAFC] dark:bg-[#020617] overflow-hidden transition-all duration-700">
-      <Asidebar />
-
-      <div className="flex-1 flex flex-col overflow-hidden relative">
-        {/* Background Decorative Glow */}
-        <div className="absolute top-[-10%] left-[-5%] w-[500px] h-[500px] bg-emerald-500/[0.05] dark:bg-emerald-600/10 blur-[120px] rounded-full pointer-events-none" />
-        
-        <Navbar />
-
-        <main className="flex-1 p-6 md:p-10 overflow-y-auto relative z-10 flex flex-col items-center">
+    <div className="flex flex-col items-center w-full relative z-10">
           
           <div className="w-full max-w-lg flex justify-between items-end mb-10">
             <div>
@@ -122,30 +107,6 @@ const IncomeShow = () => {
                 </div>
             </div>
 
-            {/* Evidence Image with Fallback */}
-            <div className="mt-10 pt-8 border-t border-dashed border-slate-200 dark:border-white/10">
-                <div className="flex items-center gap-2 mb-4">
-                    <ImageIcon size={16} className="text-emerald-500" />
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Document Evidence</p>
-                </div>
-                
-                {income?.income_image ? (
-                  <div className="relative group rounded-[2.5rem] overflow-hidden border-4 border-white dark:border-slate-800 shadow-2xl transition-transform hover:scale-[1.02] duration-500">
-                      <img
-                          src={`${BASE_URL}/${income.income_image}`}
-                          alt="Income Evidence"
-                          className="w-full h-auto max-h-64 object-contain bg-slate-50 dark:bg-slate-900"
-                          onError={(e) => { e.target.src = 'https://placehold.co/600x400?text=No+Preview+Available' }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </div>
-                ) : (
-                  <div className="rounded-[2.5rem] border-2 border-dashed border-slate-200 dark:border-white/5 p-12 text-center">
-                      <ImageIcon className="mx-auto text-slate-300 dark:text-slate-700 mb-2" size={30} />
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">No Evidence Uploaded</p>
-                  </div>
-                )}
-            </div>
 
             {/* Verification Footer */}
             <div className="mt-10 text-center border-t border-dashed border-slate-200 dark:border-white/10 pt-8">
@@ -157,8 +118,6 @@ const IncomeShow = () => {
           </Card>
           
           <p className="mt-12 text-[10px] font-black text-slate-400/30 uppercase tracking-[1.5em] select-none">Auth Protocol v2.0</p>
-        </main>
-      </div>
     </div>
   );
 };

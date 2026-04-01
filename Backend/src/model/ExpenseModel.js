@@ -1,74 +1,60 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../config/sqliteDB");
+const mongoose = require("mongoose");
 
-const Expense = sequelize.define(
-    'Expense',
+const expenseSchema = new mongoose.Schema(
     {
-        ex_id: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            autoIncrement: true
-        },
         ex_source: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                notEmpty: {
-                    msg: "source is required"
-                }
-            }
+            type: String,
+            required: [true, "source is required"]
         },
         ex_amount: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            validate: {
-                notNull: { msg: "amount is required" },
-                isFloat: { msg: "amount must be number" }
-            }
+            type: Number,
+            required: [true, "amount is required"]
         },
         ex_method: {
-            type: DataTypes.ENUM("Cash",
-                "UPI",
-                "Net Banking",
-                "Debit Card",
-                "Credit Card"),
-            allowNull: false,
-            defaultValue: "Cash",
-            validate: {
-                notEmpty: { msg: "method is required" }
-            }
-        },
-        ex_image: {
-            type: DataTypes.STRING,
-            allowNull: true,
+            type: String,
+            enum: ["Cash", "UPI", "Net Banking", "Debit Card", "Credit Card"],
+            default: "Cash",
+            required: [true, "method is required"]
         },
         ex_date: {
-            type: DataTypes.DATEONLY,
-            allowNull: false,
-            validate: {
-                notNull: { msg: "Date is required" },
-                isDate: { msg: "Invalid date" }
-            }
+            type: Date,
+            required: [true, "Date is required"]
         },
-
         ex_time: {
-            type: DataTypes.TIME,
-            allowNull: false,
-            validate: {
-                notNull: { msg: "Time is required" },
-                notEmpty: { msg: "Time is required" }
-            }
+            type: String,
+            required: [true, "Time is required"]
         },
         fkex_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
         }
-    },{
-        tableName:"expenseData",
-        timestamps:true
+    },
+    {
+        timestamps: true,
+        collection: 'expenseData'
     }
-)
+);
 
-Expense.sync()
+expenseSchema.virtual('ex_id').get(function () {
+    return this._id.toString();
+});
 
-module.exports = Expense;
+const schemaTransform = (_, ret) => {
+    delete ret._id;
+    return ret;
+};
+
+expenseSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: schemaTransform
+});
+
+expenseSchema.set('toObject', {
+    virtuals: true,
+    versionKey: false,
+    transform: schemaTransform
+});
+
+module.exports = mongoose.model("Expense", expenseSchema);
