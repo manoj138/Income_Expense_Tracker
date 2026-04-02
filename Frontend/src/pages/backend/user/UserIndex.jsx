@@ -123,18 +123,48 @@ const UserIndex = () => {
         </div>
       </div>
 
-      {/* Main Table Card */}
-      <div className="bg-white/70 dark:bg-slate-950/40 backdrop-blur-[40px] border border-white dark:border-white/5 rounded-[3rem] p-4 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] overflow-hidden">
+      {/* Desktop Table */}
+      <div className="hidden md:block bg-white/70 dark:bg-slate-950/40 backdrop-blur-[40px] border border-white dark:border-white/5 rounded-[2.5rem] sm:rounded-[3rem] p-4 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] overflow-hidden">
         <div className="flex items-center justify-between border-b border-slate-100 p-5 dark:border-white/5 sm:p-6 lg:p-8">
           <div className="flex items-center gap-2">
             <Sparkles size={14} className="text-amber-500 animate-pulse" />
             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Live Identity Stream</span>
           </div>
         </div>
-
         <div className="overflow-x-auto">
           {loading ? <PageLoader className="h-[28rem]" /> : <Table columns={columns} data={users} />}
         </div>
+      </div>
+
+      {/* Mobile Card Layout */}
+      <div className="md:hidden space-y-3">
+        {loading ? (
+          <PageLoader className="h-40" />
+        ) : users.length > 0 ? (
+          users.map((u) => (
+            <div key={u.id} className="rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm dark:border-white/10 dark:bg-slate-900/60">
+              <div className="flex items-center gap-3">
+                <div className="h-11 w-11 rounded-2xl bg-slate-100 dark:bg-slate-800/50 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                  <CircleUserRound size={20} strokeWidth={1.5} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-[1000] text-slate-800 dark:text-white tracking-tight truncate">{u.name}</p>
+                  <p className="text-[10px] font-bold text-slate-400 truncate">{u.email}</p>
+                </div>
+                <button
+                  onClick={() => setDeleteId(u.id)}
+                  className="p-2 bg-rose-50 dark:bg-rose-500/5 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-all shrink-0"
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="rounded-2xl border border-dashed border-slate-300/80 bg-white/80 p-6 text-center text-xs font-black uppercase tracking-[0.3em] text-slate-400 dark:border-white/20 dark:bg-slate-900/50">
+            No users found
+          </div>
+        )}
       </div>
 
       <ConfirmModal

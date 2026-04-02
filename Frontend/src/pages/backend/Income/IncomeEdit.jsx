@@ -84,7 +84,7 @@ const IncomeEdit = () => {
           {/* Luxury Glassmorphism Form Card */}
           <Card className="w-full max-w-2xl min-h-fit bg-white/80 dark:bg-slate-950/40 backdrop-blur-[40px] border border-white dark:border-white/5 rounded-[2.5rem] sm:rounded-[3.5rem] p-6 sm:p-10 md:p-12 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] relative overflow-hidden">
             <form onSubmit={submitHandler} className="space-y-6 sm:space-y-8 relative z-10">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                 <Input
                   label={"Income Source"}
                   name={"income_source"}

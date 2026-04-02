@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Api, handleApiError } from "../../../components/common/Api/api";
+import { formatDateString } from "../../../utils/formatDate";
 import {
   Trash2,
   Edit3,
@@ -19,6 +20,11 @@ import Pagination from "../../../components/common/Pagination";
 import ConfirmModal from "../../../components/common/ConfirmModal";
 import Input from "../../../components/common/Input";
 import PageLoader from "../../../components/common/PageLoader";
+
+const formatCurrency = (value) =>
+  Number(value || 0).toLocaleString("en-IN", {
+    maximumFractionDigits: 0,
+  });
 
 const ExpenseIndex = () => {
   const { addToast } = useToast();
@@ -58,7 +64,7 @@ const ExpenseIndex = () => {
       render: (val) => (
         <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/10 px-3 py-1 text-sm font-[1000] tracking-tighter text-rose-600 dark:text-rose-400">
           <IndianRupee size={14} />
-          {Number(val).toLocaleString("en-IN")}
+          {formatCurrency(val)}
         </span>
       ),
     },
@@ -71,29 +77,37 @@ const ExpenseIndex = () => {
         </span>
       ),
     },
-    { header: "Date", accessor: "ex_date" },
+    {
+      header: "Date",
+      accessor: "ex_date",
+      render: (val) => (
+        <span className="font-bold text-slate-600 dark:text-slate-400">
+          {formatDateString(val)}
+        </span>
+      ),
+    },
     {
       header: "Actions",
       accessor: "ex_id",
       render: (exId) => (
-        <div className="flex items-center gap-2">
+        <div className="flex gap-2">
           <Link
             to={`/admin/expense/show/${exId}`}
-            className="rounded-xl bg-slate-100 p-2 text-slate-600 shadow-sm transition-all hover:bg-blue-600 hover:text-white dark:bg-slate-800 dark:text-slate-400"
+            className="rounded-2xl border border-slate-200 p-2 text-[11px] font-bold uppercase tracking-[0.2em] text-blue-600 transition-all hover:border-blue-400 hover:bg-blue-50 dark:border-white/10 dark:text-blue-300"
             title="View Details"
           >
             <Eye size={16} />
           </Link>
           <Link
             to={`/admin/expense/edit/${exId}`}
-            className="rounded-xl bg-slate-100 p-2 text-slate-600 shadow-sm transition-all hover:bg-emerald-600 hover:text-white dark:bg-slate-800 dark:text-slate-400"
+            className="rounded-2xl border border-slate-200 p-2 text-[11px] font-bold uppercase tracking-[0.2em] text-emerald-600 transition-all hover:border-emerald-500 hover:bg-emerald-50 dark:border-white/10 dark:text-emerald-300"
             title="Edit Record"
           >
             <Edit3 size={16} />
           </Link>
           <button
             onClick={() => setDeleteId(exId)}
-            className="rounded-xl bg-slate-100 p-2 text-slate-600 shadow-sm transition-all hover:bg-rose-600 hover:text-white dark:bg-slate-800 dark:text-slate-400"
+            className="rounded-2xl border border-slate-200 p-2 text-[11px] font-bold uppercase tracking-[0.2em] text-rose-600 transition-all hover:border-rose-500 hover:bg-rose-50 dark:border-white/10 dark:text-rose-300"
             title="Delete Record"
           >
             <Trash2 size={16} />
@@ -227,7 +241,7 @@ const ExpenseIndex = () => {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-[2.5rem] border border-white bg-white/70 p-4 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] backdrop-blur-[40px] transition-all duration-500 dark:border-white/5 dark:bg-slate-950/40">
+      <div className="hidden md:block overflow-hidden rounded-[2.5rem] border border-white bg-white/70 p-4 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] backdrop-blur-[40px] transition-all duration-500 dark:border-white/5 dark:bg-slate-950/40">
         <div className="flex flex-col gap-4 border-b border-slate-100 p-5 dark:border-white/5 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-2">
             <Sparkles size={14} className="text-amber-500" />
@@ -252,6 +266,60 @@ const ExpenseIndex = () => {
         <div className="overflow-x-auto">
           <Table columns={columns} data={expense} />
         </div>
+      </div>
+
+      <div className="mt-6 space-y-3 rounded-[2rem] p-1 md:hidden">
+        {expense.length > 0 ? (
+          expense.map((item) => (
+            <div
+              key={item.ex_id}
+              className="rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm dark:border-white/10 dark:bg-slate-900/60"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500">
+                    Source
+                  </p>
+                  <p className="text-sm font-[1000] text-slate-900 dark:text-white">{item.ex_source}</p>
+                </div>
+                <span className="flex items-center gap-1 text-sm font-black text-rose-600 dark:text-rose-300">
+                  <IndianRupee size={14} />
+                  {formatCurrency(item.ex_amount)}
+                </span>
+              </div>
+                <div className="mt-3 flex items-center justify-between text-sm font-semibold uppercase tracking-[0.2em] text-slate-600 dark:text-slate-400">
+                  <span>{formatDateString(item.ex_date)}</span>
+                <span className="text-[10px] font-bold tracking-[0.35em] text-slate-500 dark:text-slate-400">
+                  {item.ex_method}
+                </span>
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Link
+                  to={`/admin/expense/show/${item.ex_id}`}
+                  className="flex-1 rounded-2xl border border-slate-200 px-3 py-2 text-center text-[11px] font-bold uppercase tracking-[0.2em] text-blue-600 hover:bg-blue-50 dark:border-white/10 dark:text-blue-300"
+                >
+                  Details
+                </Link>
+                <Link
+                  to={`/admin/expense/edit/${item.ex_id}`}
+                  className="flex-1 rounded-2xl border border-slate-200 px-3 py-2 text-center text-[11px] font-bold uppercase tracking-[0.2em] text-emerald-600 hover:bg-emerald-50 dark:border-white/10 dark:text-emerald-300"
+                >
+                  Edit
+                </Link>
+                <button
+                  onClick={() => setDeleteId(item.ex_id)}
+                  className="flex-1 rounded-2xl border border-slate-200 px-3 py-2 text-center text-[11px] font-bold uppercase tracking-[0.2em] text-rose-600 hover:bg-rose-50 dark:border-white/10 dark:text-rose-300"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="rounded-2xl border border-dashed border-slate-300/80 bg-white/80 p-4 text-center text-xs font-black uppercase tracking-[0.3em] text-slate-400 dark:border-white/20 dark:bg-slate-900/50 dark:text-slate-500">
+            No records yet
+          </div>
+        )}
       </div>
 
       {!loading && expense.length > 0 && totalPages > 1 && (

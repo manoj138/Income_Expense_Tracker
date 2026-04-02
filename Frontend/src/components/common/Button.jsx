@@ -11,15 +11,15 @@ const Button = ({
   disabled = false,
   ...props 
 }) => {
-  const baseStyles = "inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none";
+  const baseStyles = "inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none disabled:shadow-none";
   
   const variants = {
-    primary: "bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20",
-    secondary: "bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100",
-    outline: "border-2 border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 text-gray-700 dark:text-gray-200",
+    primary: "bg-blue-600 hover:bg-blue-700 text-white shadow-[0_18px_38px_-18px_rgba(37,99,235,0.65)]",
+    secondary: "bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm",
+    outline: "border-2 border-gray-200 bg-white/90 dark:border-gray-700 dark:bg-slate-950/70 hover:border-blue-500 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 text-gray-700 dark:text-gray-200",
     ghost: "bg-transparent hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-700 dark:text-gray-200",
 
-    danger: "bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20",
+    danger: "bg-red-500 hover:bg-red-600 text-white shadow-[0_18px_38px_-18px_rgba(239,68,68,0.6)]",
   };
 
   const sizes = {

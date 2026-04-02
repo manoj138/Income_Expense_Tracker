@@ -65,7 +65,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <header className="mb-8 flex flex-col justify-between gap-5 xl:flex-row xl:items-center">
+      <header className="mb-6 sm:mb-8 flex flex-col justify-between gap-4 sm:gap-5 xl:flex-row xl:items-center">
         <div className="animate-in fade-in slide-in-from-left-8 duration-1000">
           <div className="flex items-start gap-4 sm:gap-6">
             <div className="relative group shrink-0">
@@ -97,7 +97,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="flex max-w-full items-center gap-4 self-start rounded-[2rem] border border-white bg-white/70 px-5 py-4 shadow-2xl backdrop-blur-2xl transition-all dark:border-white/5 dark:bg-slate-900/40">
+        <div className="flex max-w-full items-center gap-3 self-start rounded-[1.5rem] sm:rounded-[2rem] border border-white bg-white/70 px-4 py-3 sm:px-5 sm:py-4 shadow-2xl backdrop-blur-2xl transition-all dark:border-white/5 dark:bg-slate-900/40">
           <div className="relative h-3 w-3 shrink-0">
             <div className="absolute inset-0 rounded-full bg-blue-500 opacity-75 animate-ping" />
             <div className="relative h-3 w-3 rounded-full bg-blue-600 shadow-[0_0_15px_#2563eb]" />
@@ -107,16 +107,16 @@ const Dashboard = () => {
               Active System State
             </span>
             <span className="block truncate text-xs font-bold uppercase tracking-tighter text-slate-900 dark:text-white">
-              {sessionLabel} / ID: {user.id}
+              {sessionLabel}<span className="hidden sm:inline"> / ID: {user.id}</span>
             </span>
           </div>
         </div>
       </header>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:gap-8">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:gap-8">
         <Card
           onClick={() => navigate("/admin/income")}
-          className="group relative cursor-pointer overflow-hidden rounded-[2rem] border-0 bg-slate-950 p-6 shadow-[0_40px_100px_-20px_rgba(16,185,129,0.3)] transition-all duration-700 hover:-translate-y-2 dark:bg-emerald-600 sm:rounded-[2.5rem] sm:p-8"
+          className="group relative cursor-pointer overflow-hidden rounded-[2rem] border-0 bg-slate-950 p-5 shadow-[0_40px_100px_-20px_rgba(16,185,129,0.3)] transition-all duration-700 hover:-translate-y-2 dark:bg-emerald-600 sm:rounded-[2.5rem] sm:p-8"
         >
           <div className="relative z-20 flex items-start justify-between gap-4">
             <div className="rounded-3xl border border-slate-200 bg-emerald-100 p-4 text-emerald-700 backdrop-blur-xl transition-transform duration-500 group-hover:rotate-12 dark:border-white/20 dark:bg-white/10 dark:text-emerald-200 sm:p-5">
@@ -134,18 +134,18 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="relative z-20 mt-10">
+          <div className="relative z-20 mt-6 sm:mt-10">
             <p className="text-[10px] font-black uppercase tracking-[0.35em] text-emerald-700 dark:text-emerald-200">
               Total Revenue Managed
             </p>
             <div className="mt-2 flex items-center gap-2 text-black/80 dark:text-white sm:mt-3">
-              <IndianRupee size={22} strokeWidth={2.5} className="shrink-0 sm:size-7" />
-              <h3 className="text-4xl font-[1000] tracking-tighter tabular-nums drop-shadow-2xl sm:text-4xl xl:text-5xl">
+              <IndianRupee size={18} strokeWidth={2.5} className="shrink-0 sm:size-[22px]" />
+              <h3 className="text-3xl font-[1000] tracking-tighter tabular-nums drop-shadow-2xl sm:text-4xl xl:text-5xl">
                 {formatMoney(totalAmount.income)}
               </h3>
             </div>
 
-            <div className="mt-8 flex items-center justify-between border-t border-white/10 pt-8 opacity-40">
+            <div className="mt-5 sm:mt-8 flex items-center justify-between border-t border-white/10 pt-5 sm:pt-8 opacity-40">
               <p className="text-[10px] font-mono tracking-[0.3em] text-black dark:text-white">
                 CREDIT PROTOCOL
               </p>
@@ -164,7 +164,7 @@ const Dashboard = () => {
 
         <Card
           onClick={() => navigate("/admin/expense")}
-          className="group relative cursor-pointer overflow-hidden rounded-[2.5rem] border-0 p-6 shadow-[0_40px_100px_-20px_rgba(244,63,94,0.3)] transition-all duration-700 hover:-translate-y-2 dark:bg-rose-600 sm:p-8"
+          className="group relative cursor-pointer overflow-hidden rounded-[2rem] border-0 p-5 shadow-[0_40px_100px_-20px_rgba(244,63,94,0.3)] transition-all duration-700 hover:-translate-y-2 dark:bg-rose-600 sm:rounded-[2.5rem] sm:p-8"
         >
           <div className="relative z-20 flex items-start justify-between gap-4">
             <div className="rounded-3xl border border-white/20 bg-rose-100 p-4 text-rose-700 backdrop-blur-xl transition-transform duration-500 group-hover:-rotate-12 dark:bg-white/10 dark:text-rose-200 sm:p-5">
@@ -181,18 +181,18 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="relative z-20 mt-10">
+          <div className="relative z-20 mt-6 sm:mt-10">
             <p className="text-[10px] font-black uppercase tracking-[0.35em] text-rose-600 dark:text-rose-200">
               Operational Outflow
             </p>
             <div className="mt-2 flex items-center gap-2 text-black/80 dark:text-white sm:mt-3">
-              <IndianRupee size={22} strokeWidth={2.5} className="shrink-0 sm:size-7" />
-              <h3 className="text-4xl font-[1000] tracking-tighter tabular-nums drop-shadow-2xl sm:text-4xl xl:text-5xl">
+              <IndianRupee size={18} strokeWidth={2.5} className="shrink-0 sm:size-[22px]" />
+              <h3 className="text-3xl font-[1000] tracking-tighter tabular-nums drop-shadow-2xl sm:text-4xl xl:text-5xl">
                 {formatMoney(totalAmount.expense)}
               </h3>
             </div>
 
-            <div className="mt-8 flex items-center justify-between border-t border-white/10 pt-8 opacity-40">
+            <div className="mt-5 sm:mt-8 flex items-center justify-between border-t border-white/10 pt-5 sm:pt-8 opacity-40">
               <p className="text-[10px] font-mono tracking-[0.3em] text-black/80 dark:text-white">
                 DEBIT PROTOCOL
               </p>
@@ -209,7 +209,7 @@ const Dashboard = () => {
           />
         </Card>
 
-        <Card className="group relative overflow-hidden rounded-[2.5rem] border-0 bg-slate-950 p-6 shadow-[0_40px_100px_-20px_rgba(79,70,229,0.3)] transition-all duration-700 hover:-translate-y-2 dark:bg-indigo-600 sm:p-8">
+        <Card className="group relative overflow-hidden rounded-[2rem] border-0 bg-slate-950 p-5 shadow-[0_40px_100px_-20px_rgba(79,70,229,0.3)] transition-all duration-700 hover:-translate-y-2 dark:bg-indigo-600 sm:rounded-[2.5rem] sm:p-8 sm:col-span-2 lg:col-span-1">
           <div className="relative z-20 flex items-start justify-between gap-4">
             <div className="rounded-3xl border border-white/20 bg-indigo-300/30 p-4 text-indigo-400 backdrop-blur-xl transition-transform duration-500 group-hover:rotate-6 dark:bg-white/10 dark:text-white sm:p-5">
               <Wallet size={34} strokeWidth={2.5} />
@@ -225,18 +225,18 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="relative z-20 mt-10">
+          <div className="relative z-20 mt-6 sm:mt-10">
             <p className="text-[10px] font-black uppercase tracking-[0.35em] text-indigo-500 dark:text-indigo-300">
               Available Capital
             </p>
             <div className="mt-2 flex items-center gap-2 text-black/80 dark:text-white sm:mt-3">
-              <IndianRupee size={22} strokeWidth={2.5} className="shrink-0 sm:size-7" />
-              <h3 className="text-4xl font-[1000] tracking-tighter tabular-nums drop-shadow-2xl sm:text-4xl xl:text-5xl">
+              <IndianRupee size={18} strokeWidth={2.5} className="shrink-0 sm:size-[22px]" />
+              <h3 className="text-3xl font-[1000] tracking-tighter tabular-nums drop-shadow-2xl sm:text-4xl xl:text-5xl">
                 {formatMoney(totalAmount.netBalance)}
               </h3>
             </div>
 
-            <div className="mt-8 flex items-center justify-between border-t border-white/10 pt-8 opacity-40">
+            <div className="mt-5 sm:mt-8 flex items-center justify-between border-t border-white/10 pt-5 sm:pt-8 opacity-40">
               <div className="flex items-center gap-2">
                 <div className="h-1.5 w-1.5 animate-ping rounded-full bg-indigo-700" />
                 <p className="text-[10px] font-mono tracking-[0.3em] text-black/80 dark:text-white">

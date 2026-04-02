@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Button from "../../../components/common/Button";
 import Input from "../../../components/common/Input";
-import { Api } from "../../../components/common/Api/api";
+import { Api, handleApiError } from "../../../components/common/Api/api";
 import { useAuth } from "../../../context/AuthContext";
 import {
   ArrowRight,
@@ -19,6 +19,7 @@ const Login = () => {
   const { addToast } = useToast();
   const { login } = useAuth();
   const [user, setUser] = useState({});
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const inputHandler = (e) => {
@@ -30,6 +31,7 @@ const Login = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const res = await Api.post("/user/login", user);
       if (res.data.data && res.data.data.token) {
@@ -38,7 +40,9 @@ const Login = () => {
 
       addToast("login successfully!", "success");
     } catch (error) {
-      console.log(error);
+      handleApiError(error, null, addToast);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -146,6 +150,7 @@ const Login = () => {
 
               <Button
                 type="submit"
+                loading={loading}
                 className="flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 py-4 font-bold text-white shadow-[0_24px_50px_-24px_rgba(37,99,235,0.75)] transition-all active:scale-[0.98] hover:bg-blue-700 sm:py-5"
               >
                 <LogIn size={18} />

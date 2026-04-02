@@ -95,14 +95,14 @@ const Profile = () => {
                 <span className="text-[10px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-[0.4em]">Diamond Elite Tier</span>
               </div>
 
-              <h1 className="text-4xl sm:text-6xl font-[1000] text-slate-900 dark:text-white tracking-tighter leading-tight mb-4 group-hover:text-blue-600 transition-colors duration-500">
+              <h1 className="text-3xl sm:text-4xl md:text-6xl font-[1000] text-slate-900 dark:text-white tracking-tighter leading-tight mb-4 group-hover:text-blue-600 transition-colors duration-500">
                 {userData.name}
               </h1>
 
               <div className="flex flex-wrap justify-center md:justify-start gap-4 mb-10">
-                <div className="flex items-center gap-2.5 px-4 py-2 bg-slate-100/50 dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/5 transition-all hover:border-blue-500/20">
-                  <Mail size={14} className="text-blue-500" />
-                  <span className="text-xs font-bold text-slate-600 dark:text-slate-400">{userData.email}</span>
+                <div className="flex items-center gap-2.5 px-3 py-2 bg-slate-100/50 dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/5 transition-all hover:border-blue-500/20 max-w-full">
+                  <Mail size={14} className="text-blue-500 shrink-0" />
+                  <span className="text-xs font-bold text-slate-600 dark:text-slate-400 truncate">{userData.email}</span>
                 </div>
                 <div className="flex items-center gap-2.5 px-4 py-2 bg-slate-100/50 dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/5">
                   <Calendar size={14} className="text-emerald-500" />
@@ -142,7 +142,7 @@ const Profile = () => {
         <div className="px-8 py-8 sm:px-14 sm:py-10 bg-slate-50/50 dark:bg-white/5 backdrop-blur-3xl border-t border-slate-100 dark:border-white/5">
           <Link 
             to={`/admin/profile/edit/${userData.id}`} 
-            className="group/btn relative w-full h-16 sm:h-20 bg-slate-900 dark:bg-blue-600 rounded-[2rem] sm:rounded-[2.5rem] flex items-center justify-center gap-4 text-white font-[1000] uppercase tracking-[0.2em] text-xs sm:text-sm shadow-2xl shadow-blue-500/30 overflow-hidden transition-all hover:scale-[1.01] active:scale-95"
+            className="group/btn relative w-full h-14 sm:h-16 md:h-20 bg-slate-900 dark:bg-blue-600 rounded-[1.5rem] sm:rounded-[2rem] md:rounded-[2.5rem] flex items-center justify-center gap-3 text-white font-[1000] uppercase tracking-[0.2em] text-xs sm:text-sm shadow-2xl shadow-blue-500/30 overflow-hidden transition-all hover:scale-[1.01] active:scale-95"
           >
             {/* Animated Flare Effect */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 ease-in-out" />

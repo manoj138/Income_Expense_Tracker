@@ -74,7 +74,7 @@ const ExpenseCreate = () => {
             
             <form onSubmit={submitHandler} className="space-y-6 sm:space-y-8 relative z-10">
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                 <Input
                   label={"Expense Source"}
                   name={"ex_source"}

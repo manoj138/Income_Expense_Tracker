@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Api, handleApiError } from "../../../components/common/Api/api";
 import Table from "../../../components/common/Table";
+import { formatDateString } from "../../../utils/formatDate";
 import {
   Trash2,
   Plus,
@@ -19,6 +20,11 @@ import ConfirmModal from "../../../components/common/ConfirmModal";
 import Input from "../../../components/common/Input";
 import PageLoader from "../../../components/common/PageLoader";
 
+const formatCurrency = (value) =>
+  Number(value || 0).toLocaleString("en-IN", {
+    maximumFractionDigits: 0,
+  });
+
 const IncomesIndex = () => {
   const [incomeData, setIncomeData] = useState([]);
   const { addToast } = useToast();
@@ -31,7 +37,6 @@ const IncomesIndex = () => {
   const [search, setSearch] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [status, setStatus] = useState("");
 
   const pageSize = 10;
 
@@ -59,7 +64,7 @@ const IncomesIndex = () => {
       render: (val) => (
         <span className="flex items-center gap-1 text-lg font-black text-emerald-600 dark:text-emerald-400">
           <IndianRupee size={16} />
-          {Number(val).toLocaleString("en-IN")}
+          {formatCurrency(val)}
         </span>
       ),
     },
@@ -77,7 +82,7 @@ const IncomesIndex = () => {
       accessor: "income_date",
       render: (val) => (
         <span className="font-bold text-slate-600 dark:text-slate-400">
-          {val}
+          {formatDateString(val)}
         </span>
       ),
     },
@@ -85,34 +90,30 @@ const IncomesIndex = () => {
       header: "Action",
       accessor: "income_id",
       render: (incomeId) => (
-        <div className="flex items-center gap-2">
-          <Link to={`/admin/income/show/${incomeId}`}>
-            <div className="rounded-xl p-2 text-blue-600 transition-colors hover:bg-blue-50 dark:hover:bg-blue-500/10">
-              <Eye size={18} />
-            </div>
-          </Link>
-          <Link to={`/admin/income/edit/${incomeId}`}>
-            <div className="rounded-xl p-2 text-amber-600 transition-colors hover:bg-amber-50 dark:hover:bg-amber-500/10">
-              <Edit3 size={18} />
-            </div>
-          </Link>
-          <button
-            onClick={() => setDeleteId(incomeId)}
-            className="rounded-xl p-2 text-rose-600 transition-colors hover:bg-rose-50 dark:hover:bg-rose-500/10"
-          >
-            <Trash2 size={18} />
-          </button>
-        </div>
-      ),
+      <div className="flex gap-2">
+        <Link to={`/admin/income/show/${incomeId}`} className="rounded-2xl bg-slate-100 p-2 text-slate-600 shadow-sm transition-all hover:bg-blue-600 hover:text-white dark:bg-slate-800 dark:text-slate-400">
+          <Eye size={18} />
+        </Link>
+        <Link to={`/admin/income/edit/${incomeId}`} className="rounded-2xl bg-slate-100 p-2 text-slate-600 shadow-sm transition-all hover:bg-amber-500 hover:text-white dark:bg-slate-800 dark:text-slate-400">
+          <Edit3 size={18} />
+        </Link>
+        <button
+          onClick={() => setDeleteId(incomeId)}
+          className="rounded-2xl bg-slate-100 p-2 text-slate-600 shadow-sm transition-all hover:bg-rose-600 hover:text-white dark:bg-slate-800 dark:text-slate-400"
+        >
+          <Trash2 size={18} />
+        </button>
+      </div>
+    ),
     },
   ];
 
   const fetchIncome = async (page = 1) => {
     setLoading(true);
     try {
-      const res = await Api.get("/income", {
-        params: { page, size: pageSize, search, startDate, endDate, status },
-      });
+    const res = await Api.get("/income", {
+      params: { page, size: pageSize, search, startDate, endDate },
+    });
       const responseData = res.data.data;
       setTotalAmounts(responseData.totalAmount || 0);
       setIncomeData(responseData.items || []);
@@ -129,7 +130,7 @@ const IncomesIndex = () => {
     try {
       await Api.delete(`/income/${deleteId}/delete`);
       setDeleteId(null);
-      addToast("Record Deleted Successfully", "primary");
+      addToast("Record Deleted Successfully", "success");
       const nextPage =
         incomeData.length === 1 && currentPage > 1
           ? currentPage - 1
@@ -232,7 +233,7 @@ const IncomesIndex = () => {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-[2.5rem] border border-white bg-white/80 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] backdrop-blur-[40px] dark:border-white/5 dark:bg-slate-900/40">
+      <div className="hidden md:block overflow-hidden rounded-[2.5rem] border border-white bg-white/80 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] backdrop-blur-[40px] dark:border-white/5 dark:bg-slate-900/40">
         <div className="flex flex-col gap-4 border-b border-slate-100 p-5 dark:border-white/5 sm:p-6 lg:flex-row lg:items-center lg:justify-between xl:p-8">
           <h2 className="flex items-center gap-3 text-lg font-bold text-slate-800 dark:text-white">
             <LayoutGrid size={20} className="text-blue-600" /> Recent Transactions
@@ -250,10 +251,63 @@ const IncomesIndex = () => {
             Records: {incomeData.length}
           </div>
         </div>
-
         <div className="p-4">
           <Table columns={columns} data={incomeData} hoverable />
         </div>
+      </div>
+
+      <div className="mt-6 space-y-3 rounded-[2rem] p-1 md:hidden">
+        {incomeData.length > 0 ? (
+          incomeData.map((item) => (
+            <div
+              key={item.income_id}
+              className="rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm dark:border-white/10 dark:bg-slate-900/60"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500">
+                    Source
+                  </p>
+                  <p className="text-sm font-[1000] text-slate-900 dark:text-white">{item.income_source}</p>
+                </div>
+                <span className="flex items-center gap-1 text-sm font-black text-emerald-600 dark:text-emerald-300">
+                  <IndianRupee size={14} />
+                  {formatCurrency(item.income_amount)}
+                </span>
+              </div>
+                <div className="mt-3 flex items-center justify-between text-sm font-semibold uppercase tracking-[0.2em] text-slate-600 dark:text-slate-400">
+                  <span>{formatDateString(item.income_date)}</span>
+                <span className="text-[10px] font-bold tracking-[0.35em] text-slate-500 dark:text-slate-400">
+                  {item.income_method}
+                </span>
+              </div>
+              <div className="mt-3 flex items-center justify-between gap-2">
+                <Link
+                  to={`/admin/income/show/${item.income_id}`}
+                  className="flex-1 rounded-2xl border border-slate-200 px-3 py-2 text-center text-[11px] font-bold uppercase tracking-[0.2em] text-blue-600 hover:bg-blue-50 dark:border-white/10 dark:text-blue-300"
+                >
+                  Details
+                </Link>
+                <Link
+                  to={`/admin/income/edit/${item.income_id}`}
+                  className="flex-1 rounded-2xl border border-slate-200 px-3 py-2 text-center text-[11px] font-bold uppercase tracking-[0.2em] text-amber-600 hover:bg-amber-50 dark:border-white/10 dark:text-amber-300"
+                >
+                  Edit
+                </Link>
+                <button
+                  onClick={() => setDeleteId(item.income_id)}
+                  className="flex-1 rounded-2xl border border-slate-200 px-3 py-2 text-center text-[11px] font-bold uppercase tracking-[0.2em] text-rose-600 hover:bg-rose-50 dark:border-white/10 dark:text-rose-300"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="rounded-2xl border border-dashed border-slate-300/80 bg-white/80 p-4 text-center text-xs font-black uppercase tracking-[0.3em] text-slate-400 dark:border-white/20 dark:bg-slate-900/50 dark:text-slate-500">
+            No records yet
+          </div>
+        )}
       </div>
 
       {!loading && incomeData.length > 0 && totalPages > 1 && (

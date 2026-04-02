@@ -41,12 +41,12 @@ const Setting = () => {
   };
 
   const ToggleRow = ({ icon: Icon, title, description, value, onChange, tone }) => (
-    <div className="flex items-center justify-between gap-4 rounded-[2rem] border border-white/60 dark:border-white/5 bg-white/70 dark:bg-slate-900/50 p-5 backdrop-blur-xl">
-      <div className="flex items-start gap-4">
-        <div className={`rounded-2xl p-3 ${tone}`}>
+    <div className="flex items-center justify-between gap-3 rounded-[2rem] border border-white/60 dark:border-white/5 bg-white/70 dark:bg-slate-900/50 p-4 sm:p-5 backdrop-blur-xl">
+      <div className="flex items-start gap-3 min-w-0">
+        <div className={`rounded-2xl p-3 shrink-0 ${tone}`}>
           <Icon size={18} />
         </div>
-        <div>
+        <div className="min-w-0">
           <h3 className="text-sm font-[1000] text-slate-900 dark:text-white tracking-tight">
             {title}
           </h3>
@@ -82,12 +82,12 @@ const Setting = () => {
               Control Center
             </span>
           </div>
-          <h1 className="text-3xl md:text-5xl font-[1000] tracking-tighter text-slate-900 dark:text-white">
+          <h1 className="text-2xl sm:text-3xl md:text-5xl font-[1000] tracking-tighter text-slate-900 dark:text-white">
             Account <span className="italic text-blue-600">Settings</span>
           </h1>
           <p className="mt-3 max-w-2xl text-sm font-medium text-slate-500 dark:text-slate-400">
             Profile preferences, security controls, and notification behavior for{" "}
-            <span className="font-black text-slate-800 dark:text-slate-200">
+            <span className="font-black text-slate-800 dark:text-slate-200 break-all">
               {user?.email}
             </span>
             .
@@ -96,7 +96,7 @@ const Setting = () => {
 
         <div className="rounded-[1.8rem] sm:rounded-[2rem] border border-emerald-200/60 bg-emerald-500/10 px-4 py-3 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/15 dark:text-emerald-300 sm:px-6 sm:py-4">
           <div className="flex items-center gap-3">
-            <CheckCircle2 size={16} sm:size={18} />
+            <CheckCircle2 size={18} />
             <div>
               <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.35em]">
                 Status
@@ -107,7 +107,7 @@ const Setting = () => {
         </div>
       </div>
 
-      <div className="grid gap-8 xl:grid-cols-[1.2fr_0.8fr]">
+      <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
         <section className="space-y-4 sm:space-y-6">
           <div className="rounded-[2rem] sm:rounded-[2.5rem] border border-white dark:border-white/5 bg-white/75 p-5 sm:p-7 shadow-[0_30px_80px_-30px_rgba(15,23,42,0.18)] backdrop-blur-2xl dark:bg-slate-950/40">
             <div className="mb-6 flex items-center gap-3">

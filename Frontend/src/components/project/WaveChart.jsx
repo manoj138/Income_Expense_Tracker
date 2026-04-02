@@ -55,16 +55,16 @@ const WaveChart = () => {
   };
 
   return (
-    <div className="group relative overflow-hidden bg-white/50 dark:bg-slate-900/40 backdrop-blur-[40px] border border-white dark:border-white/5 rounded-[3.5rem] p-10 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] transition-all duration-700">
+    <div className="group relative overflow-hidden bg-white/50 dark:bg-slate-900/40 backdrop-blur-[40px] border border-white dark:border-white/5 rounded-[2rem] sm:rounded-[3.5rem] p-5 sm:p-10 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] transition-all duration-700">
       
       {/* Header Section */}
-      <div className="flex justify-between items-center mb-10">
+      <div className="flex flex-wrap justify-between items-start gap-3 mb-6 sm:mb-10">
         <div>
           <div className="flex items-center gap-2 text-blue-600 mb-1">
             <Activity size={16} className="animate-pulse" />
             <span className="text-[9px] font-[1000] uppercase tracking-[0.3em]">Analytics Engine</span>
           </div>
-          <h2 className="text-2xl font-[1000] text-slate-900 dark:text-white tracking-tighter">
+          <h2 className="text-xl sm:text-2xl font-[1000] text-slate-900 dark:text-white tracking-tighter">
             Cash <span className="italic text-blue-600">Flow</span>
           </h2>
         </div>
@@ -81,7 +81,7 @@ const WaveChart = () => {
       </div>
 
       {/* Chart Container */}
-      <div className="h-[320px] w-full relative z-10">
+      <div className="h-[220px] sm:h-[320px] w-full relative z-10">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={chart} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>

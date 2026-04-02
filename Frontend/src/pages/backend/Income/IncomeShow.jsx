@@ -15,25 +15,35 @@ import {
   ShieldCheck
 } from "lucide-react";
 import PageLoader from "../../../components/common/PageLoader";
+import { formatDateString } from "../../../utils/formatDate";
 
 const IncomeShow = () => {
   const { id } = useParams();
   const [income, setIncome] = useState(null); // null ने सुरू करा जेणेकरून लोडिंग स्टेट दाखवता येईल
   const [loading, setLoading] = useState(true);
 
-  const fetchIncome = async () => {
-    try {
-      const res = await Api.get(`/income/${id}/find`);
-      setIncome(res.data.data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchIncome();
+    let isMounted = true;
+    const loadIncome = async () => {
+      try {
+        const res = await Api.get(`/income/${id}/find`);
+        if (isMounted) {
+          setIncome(res.data.data);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadIncome();
+
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
 
   if (loading) {
@@ -43,14 +53,14 @@ const IncomeShow = () => {
   return (
     <div className="flex flex-col items-center w-full relative z-10">
           
-          <div className="w-full max-w-lg flex justify-between items-end mb-10">
+          <div className="w-full max-w-lg flex justify-between items-end mb-6 sm:mb-10">
             <div>
               <div className="flex items-center gap-2 text-emerald-600 mb-2">
                 <ShieldCheck size={16} className="animate-pulse" />
                 <span className="text-[10px] font-black uppercase tracking-[0.4em]">Protocol Secured</span>
               </div>
-              <h1 className="text-4xl font-[1000] text-slate-900 dark:text-white tracking-tighter">
-                Income <span className="italic text-emerald-600 text-5xl">Receipt</span>
+              <h1 className="text-2xl sm:text-4xl font-[1000] text-slate-900 dark:text-white tracking-tighter">
+                Income <span className="italic text-emerald-600 sm:text-5xl">Receipt</span>
               </h1>
             </div>
             
@@ -94,7 +104,7 @@ const IncomeShow = () => {
             <div className="space-y-8">
                 <div className="relative group overflow-hidden bg-gradient-to-br from-emerald-500/5 to-transparent dark:from-emerald-500/10 dark:to-transparent rounded-[2.5rem] p-8 text-center border border-emerald-500/10 shadow-inner">
                     <p className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-2 italic opacity-70">Amount Credited</p>
-                    <h3 className="text-5xl md:text-6xl font-[1000] text-emerald-600 dark:text-emerald-400 tracking-[calc(-0.05em)] tabular-nums">
+                    <h3 className="text-4xl sm:text-5xl md:text-6xl font-[1000] text-emerald-600 dark:text-emerald-400 tracking-[calc(-0.05em)] tabular-nums">
                         ₹{Number(income?.income_amount || 0).toLocaleString()}
                     </h3>
                 </div>
@@ -102,7 +112,7 @@ const IncomeShow = () => {
                 <div className="grid grid-cols-1 gap-5 px-2">
                     <DetailRow icon={<Tag size={14}/>} label="Source" value={income?.income_source} />
                     <DetailRow icon={<CreditCard size={14}/>} label="Method" value={income?.income_method} isCaps />
-                    <DetailRow icon={<Calendar size={14}/>} label="Date" value={income?.income_date} />
+                    <DetailRow icon={<Calendar size={14}/>} label="Date" value={formatDateString(income?.income_date)} />
                     <DetailRow icon={<Clock size={14}/>} label="Time" value={income?.income_time} />
                 </div>
             </div>

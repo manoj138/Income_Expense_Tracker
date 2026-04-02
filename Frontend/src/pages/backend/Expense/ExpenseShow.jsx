@@ -3,48 +3,56 @@ import { Link, useParams } from 'react-router-dom';
 import { Api, BASE_URL } from '../../../components/common/Api/api';
 import Card from '../../../components/common/Card';
 import { ArrowLeft, Receipt, CheckCircle2, Sparkles, FileText, Tag, CreditCard, Calendar, Clock } from 'lucide-react';
+import { formatDateString } from '../../../utils/formatDate';
 
 const ExpenseShow = () => {
   const { id } = useParams();
   const [expense, setExpense] = useState({});
 
-  const fetchExpense = async () => {
-    try {
-      const res = await Api.get(`/expense/${id}/find`);
-      setExpense(res.data.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
-    fetchExpense();
+    let isMounted = true;
+    const loadExpense = async () => {
+      try {
+        const res = await Api.get(`/expense/${id}/find`);
+        if (isMounted) {
+          setExpense(res.data.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    loadExpense();
+
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
 
   return (
     <div className="flex flex-col items-center w-full relative z-10 pb-20">
           
           {/* Page Header */}
-          <div className="w-full max-w-lg flex justify-between items-end mb-10">
+          <div className="w-full max-w-lg flex justify-between items-end mb-6 sm:mb-10">
             <div>
               <div className="flex items-center gap-2 text-rose-600 mb-2">
                 <FileText size={16} className="animate-pulse" />
                 <span className="text-[10px] font-black uppercase tracking-[0.4em]">Audit Protocol</span>
               </div>
-              <h1 className="text-4xl font-[1000] text-slate-900 dark:text-white tracking-tighter">
-                Expense <span className="italic text-rose-600 text-5xl">Voucher</span>
+              <h1 className="text-2xl sm:text-4xl font-[1000] text-slate-900 dark:text-white tracking-tighter">
+                Expense <span className="italic text-rose-600 sm:text-5xl">Voucher</span>
               </h1>
             </div>
             
-            <Link to="/admin/expense" className="group flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 text-slate-600 dark:text-slate-400 rounded-2xl font-bold hover:bg-slate-50 transition-all shadow-sm active:scale-95">
+            <Link to="/admin/expense" className="group flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 text-slate-600 dark:text-slate-400 rounded-2xl font-bold hover:bg-slate-50 transition-all shadow-sm active:scale-95">
               <ArrowLeft size={18} /> 
-              <span className="text-[10px] uppercase tracking-widest">Back</span>
+              <span className="text-[10px] uppercase tracking-widest hidden sm:inline">Back</span>
             </Link>
           </div>
 
           {/* Premium Glassmorphism Receipt Card */}
           {/* बदल: overflow-hidden काढून टाकला आणि min-h-fit दिला */}
-          <Card className="w-full max-w-lg min-h-fit bg-white/80 dark:bg-slate-950/40 backdrop-blur-[40px] border border-white dark:border-white/5 rounded-[3.5rem] p-10 md:p-12 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] relative transition-all duration-500 mb-10">
+          <Card className="w-full max-w-lg min-h-fit bg-white/80 dark:bg-slate-950/40 backdrop-blur-[40px] border border-white dark:border-white/5 rounded-[2.5rem] sm:rounded-[3.5rem] p-6 sm:p-10 md:p-12 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] relative transition-all duration-500 mb-10">
             
             {/* Decorative Receipt Notches - यांना z-10 दिला आहे */}
             <div className="absolute top-1/2 -left-5 w-10 h-10 bg-[#F8FAFC] dark:bg-[#020617] rounded-full z-10" />
@@ -66,7 +74,7 @@ const ExpenseShow = () => {
             <div className="space-y-8">
               <div className="bg-rose-500/5 dark:bg-rose-500/10 rounded-[2.5rem] p-8 text-center border border-rose-500/10">
                 <p className="text-[9px] font-black text-rose-600 dark:text-rose-400 uppercase tracking-widest mb-2 italic text-center w-full block">Settled Amount</p>
-                <h3 className="text-5xl md:text-6xl font-[1000] text-rose-600 dark:text-rose-400 tracking-tighter tabular-nums drop-shadow-lg">
+                <h3 className="text-4xl sm:text-5xl md:text-6xl font-[1000] text-rose-600 dark:text-rose-400 tracking-tighter tabular-nums drop-shadow-lg">
                   ₹{Number(expense.ex_amount).toLocaleString()}
                 </h3>
               </div>
@@ -74,7 +82,7 @@ const ExpenseShow = () => {
               <div className="grid grid-cols-1 gap-6 px-2">
                 <DataRow icon={<Tag size={14}/>} label="Expenditure Source" value={expense.ex_source} />
                 <DataRow icon={<CreditCard size={14}/>} label="Settlement Method" value={expense.ex_method} isCaps />
-                <DataRow icon={<Calendar size={14}/>} label="Logged Date" value={expense.ex_date} />
+                <DataRow icon={<Calendar size={14}/>} label="Logged Date" value={formatDateString(expense.ex_date)} />
                 <DataRow icon={<Clock size={14}/>} label="Logged Time" value={expense.ex_time} />
               </div>
             </div>

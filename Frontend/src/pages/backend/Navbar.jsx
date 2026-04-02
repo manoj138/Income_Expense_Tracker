@@ -110,6 +110,61 @@ const Navbar = ({ isSidebarOpen, onToggleSidebar }) => {
     setNotifications([]);
   };
 
+  const renderNotifications = () => (
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center justify-between px-3 py-2">
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-[0.35em] text-slate-400">
+            Notifications
+          </p>
+          <p className="mt-1 text-sm font-bold text-slate-900 dark:text-white">
+            Recent activity updates
+          </p>
+        </div>
+        {notifications.length > 0 && (
+          <button
+            onClick={handleClearNotifications}
+            className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-500 hover:text-rose-600"
+          >
+            Clear
+          </button>
+        )}
+      </div>
+
+      <div className="max-h-80 space-y-2 overflow-y-auto px-1">
+        {notifications.length > 0 ? (
+          notifications.map((notification) => (
+            <div
+              key={notification.id}
+              className="rounded-2xl border border-slate-100 bg-slate-50/80 p-4 dark:border-slate-800 dark:bg-slate-800/50"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs font-[1000] text-slate-900 dark:text-white">
+                  {notification.title}
+                </p>
+                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">
+                  {new Date(notification.createdAt).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+              </div>
+              <p className="mt-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+                {notification.message}
+              </p>
+            </div>
+          ))
+        ) : (
+          <div className="rounded-2xl border border-dashed border-slate-200 p-6 text-center dark:border-slate-700">
+            <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
+              No notifications yet.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   const activePageTitle = pageTitleMap[location.pathname] || "SmartWallet";
 
   return (
@@ -157,58 +212,14 @@ const Navbar = ({ isSidebarOpen, onToggleSidebar }) => {
           </button>
 
           {showNotifications && (
-            <div className="absolute right-0 z-[60] mt-4 w-[360px] max-w-[90vw] rounded-[2rem] border border-slate-100 bg-white/95 p-3 shadow-[0_20px_50px_rgba(0,0,0,0.15)] backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200 dark:border-slate-800 dark:bg-slate-900/95">
-              <div className="flex items-center justify-between px-3 py-2">
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.35em] text-slate-400">
-                    Notifications
-                  </p>
-                  <p className="mt-1 text-sm font-bold text-slate-900 dark:text-white">
-                    Recent activity updates
-                  </p>
-                </div>
-                {notifications.length > 0 && (
-                  <button
-                    onClick={handleClearNotifications}
-                    className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-500 hover:text-rose-600"
-                  >
-                    Clear
-                  </button>
-                )}
+            <>
+              <div className="hidden sm:block absolute right-0 z-[60] mt-4 w-[360px] rounded-[2rem] border border-slate-100 bg-white/95 p-3 shadow-[0_20px_50px_rgba(0,0,0,0.15)] backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200 dark:border-slate-800 dark:bg-slate-900/95">
+                {renderNotifications()}
               </div>
-
-              <div className="mt-2 max-h-80 space-y-2 overflow-y-auto px-1">
-                {notifications.length > 0 ? (
-                  notifications.map((notification) => (
-                    <div
-                      key={notification.id}
-                      className="rounded-2xl border border-slate-100 bg-slate-50/80 p-4 dark:border-slate-800 dark:bg-slate-800/50"
-                    >
-                      <div className="flex items-center justify-between gap-3">
-                        <p className="text-xs font-[1000] text-slate-900 dark:text-white">
-                          {notification.title}
-                        </p>
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">
-                          {new Date(notification.createdAt).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </span>
-                      </div>
-                      <p className="mt-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-                        {notification.message}
-                      </p>
-                    </div>
-                  ))
-                ) : (
-                  <div className="rounded-2xl border border-dashed border-slate-200 p-6 text-center dark:border-slate-700">
-                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                      No notifications yet.
-                    </p>
-                  </div>
-                )}
+              <div className="block sm:hidden fixed inset-x-3 bottom-4 z-[60] rounded-[2rem] border border-slate-100 bg-white/95 p-3 shadow-[0_20px_30px_rgba(0,0,0,0.2)] backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200 dark:border-slate-800 dark:bg-slate-900/95">
+                {renderNotifications()}
               </div>
-            </div>
+            </>
           )}
         </div>
 

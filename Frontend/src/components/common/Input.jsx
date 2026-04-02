@@ -38,14 +38,14 @@ const Input = ({
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className={`w-full px-4 py-2.5 bg-white dark:bg-surface-card-dark border rounded-xl outline-none transition-all duration-200 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-600 ${
+          className={`w-full rounded-[1rem] border bg-white/90 px-4 py-3 text-gray-900 outline-none transition-all duration-200 placeholder:text-gray-400 dark:bg-surface-card-dark/90 dark:text-gray-100 dark:placeholder:text-gray-500 ${
             Icon && iconPosition === 'left' ? 'pl-11' : ''
           } ${
             Icon && iconPosition === 'right' ? 'pr-11' : ''
           } ${
             hasError 
-              ? 'border-red-500 focus:ring-2 focus:ring-red-500/20' 
-              : 'border-gray-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500'
+              ? 'border-red-500 shadow-[0_0_0_4px_rgba(239,68,68,0.08)] focus:ring-2 focus:ring-red-500/20' 
+              : 'border-gray-200 shadow-[0_10px_25px_-20px_rgba(15,23,42,0.3)] dark:border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
 
           }`}
           {...props}
