@@ -1,7 +1,7 @@
 import axios from "axios"
 
 // ✅ Backend base URLs
-const BASE_URL = "http://localhost:4000";
+const BASE_URL = "https://smart-wallet-track.vercel.app";
 
 
 const Api = axios.create({

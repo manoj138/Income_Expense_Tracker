@@ -21,20 +21,27 @@ app.use('/api/income', authenticateToken, IncomeRoutes);
 app.use('/api/expense', authenticateToken, ExpenseRoutes);
 app.use('/api/dashboard', DashboardRoutes);
 
+// Initialize database connection
+connectDB();
+
 app.get('/', (req, res) => {
   res.send('Hello World! Express server is running.');
 });
 
-const startServer = async () => {
-  try {
-    await connectDB();
-    app.listen(port, () => {
-      console.log(`Example app listening at http://localhost:${port}`);
-    });
-  } catch (error) {
-    console.error('Server startup failed:', error.message);
-    process.exit(1);
-  }
-};
+// Start the server if running locally (not on Vercel)
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  const startServer = async () => {
+    try {
+      app.listen(port, () => {
+        console.log(`Example app listening at http://localhost:${port}`);
+      });
+    } catch (error) {
+      console.error('Server startup failed:', error.message);
+      process.exit(1);
+    }
+  };
+  startServer();
+}
 
-startServer();
+// CRITICAL: Export for Vercel's serverless functions
+module.exports = app;
