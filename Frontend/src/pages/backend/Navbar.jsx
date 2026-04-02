@@ -212,14 +212,9 @@ const Navbar = ({ isSidebarOpen, onToggleSidebar }) => {
           </button>
 
           {showNotifications && (
-            <>
-              <div className="hidden sm:block absolute right-0 z-[60] mt-4 w-[360px] rounded-[2rem] border border-slate-100 bg-white/95 p-3 shadow-[0_20px_50px_rgba(0,0,0,0.15)] backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200 dark:border-slate-800 dark:bg-slate-900/95">
-                {renderNotifications()}
-              </div>
-              <div className="block sm:hidden fixed inset-x-3 bottom-4 z-[60] rounded-[2rem] border border-slate-100 bg-white/95 p-3 shadow-[0_20px_30px_rgba(0,0,0,0.2)] backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200 dark:border-slate-800 dark:bg-slate-900/95">
-                {renderNotifications()}
-              </div>
-            </>
+            <div className="absolute right-0 top-full z-[60] mt-4 w-[calc(100vw-2rem)] max-w-[360px] rounded-[2rem] border border-slate-100 bg-white/95 p-3 shadow-[0_20px_50px_rgba(0,0,0,0.15)] backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200 dark:border-slate-800 dark:bg-slate-900/95 sm:w-[360px] sm:right-0 sm:left-auto">
+              {renderNotifications()}
+            </div>
           )}
         </div>
 
