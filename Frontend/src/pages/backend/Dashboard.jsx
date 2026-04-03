@@ -324,200 +324,9 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      <div className="mt-8 sm:mt-10">
-        <WaveChart />
-      </div>
-
-      <div className="mt-8 grid grid-cols-1 gap-5 xl:grid-cols-[1.1fr_0.9fr] xl:gap-8">
-        <Card className="overflow-hidden rounded-[2rem] border-white bg-white/80 p-5 shadow-[0_30px_80px_-30px_rgba(15,23,42,0.16)] backdrop-blur-[40px] dark:border-white/5 dark:bg-slate-900/40 sm:p-8">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.35em] text-slate-400">
-                Monthly Snapshot
-              </p>
-              <h2 className="mt-2 text-2xl font-[1000] tracking-tighter text-slate-900 dark:text-white">
-                Income vs Expense
-              </h2>
-            </div>
-            <div className="rounded-full border border-blue-500/20 bg-blue-500/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.3em] text-blue-600 dark:text-blue-300">
-              Current Month
-            </div>
-          </div>
-
-          <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
-            {monthlyCards.map((item) => {
-              const isPositive = Number(item.change || 0) >= 0;
-              const isIncomeCard = item.key === "income";
-
-              return (
-                <div
-                  key={item.key}
-                  className={`rounded-[1.75rem] border p-5 ${
-                    item.tone === "emerald"
-                      ? "border-emerald-500/20 bg-emerald-500/10"
-                      : "border-rose-500/20 bg-rose-500/10"
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
-                        {item.label}
-                      </p>
-                      <div className="mt-3 flex items-center gap-1 text-slate-900 dark:text-white">
-                        <IndianRupee size={16} className="shrink-0" />
-                        <span className="text-2xl font-[1000] tracking-tight">
-                          {formatMoney(item.amount)}
-                        </span>
-                      </div>
-                    </div>
-                    <div
-                      className={`rounded-full px-3 py-2 text-[10px] font-black uppercase tracking-[0.25em] ${
-                        isPositive
-                          ? isIncomeCard
-                            ? "bg-emerald-600 text-white"
-                            : "bg-rose-600 text-white"
-                          : "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
-                      }`}
-                    >
-                      {formatChange(item.change)}
-                    </div>
-                  </div>
-
-                  <div className="mt-5 flex items-center justify-between text-xs font-bold text-slate-500 dark:text-slate-400">
-                    <span>Last month</span>
-                    <span className="flex items-center gap-1">
-                      <IndianRupee size={12} />
-                      {formatMoney(item.previous)}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </Card>
-
-        <Card className="overflow-hidden rounded-[2rem] border-white bg-white/80 p-5 shadow-[0_30px_80px_-30px_rgba(15,23,42,0.16)] backdrop-blur-[40px] dark:border-white/5 dark:bg-slate-900/40 sm:p-8">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.35em] text-slate-400">
-                Capital Health
-              </p>
-              <h2 className="mt-2 text-2xl font-[1000] tracking-tighter text-slate-900 dark:text-white">
-                Savings Rate
-              </h2>
-            </div>
-            <div className="rounded-2xl bg-indigo-500/10 p-3 text-indigo-600 dark:text-indigo-300">
-              <Gauge size={24} />
-            </div>
-          </div>
-
-          <div className="mt-6 flex items-end justify-between gap-4">
-            <div>
-              <p className="text-4xl font-[1000] tracking-tighter text-slate-900 dark:text-white">
-                {savingsProgress}%
-              </p>
-              <p className="mt-2 max-w-sm text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-                {insightText}
-              </p>
-            </div>
-            <div className="hidden h-24 w-24 items-center justify-center rounded-full border-[10px] border-indigo-500/15 text-lg font-[1000] text-indigo-600 dark:flex dark:text-indigo-300">
-              {savingsProgress}%
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <ProgressBar
-              value={savingsProgress}
-              max={100}
-              variant={totalAmount.netBalance >= 0 ? "success" : "danger"}
-              size="lg"
-            />
-          </div>
-
-          <div className="mt-6 grid grid-cols-2 gap-3">
-            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 dark:border-white/5 dark:bg-slate-950/40">
-              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400">
-                Net Balance
-              </p>
-              <p className="mt-2 flex items-center gap-1 text-lg font-[1000] text-slate-900 dark:text-white">
-                <IndianRupee size={15} />
-                {formatMoney(totalAmount.netBalance)}
-              </p>
-            </div>
-            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 dark:border-white/5 dark:bg-slate-950/40">
-              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400">
-                Coverage
-              </p>
-              <p className="mt-2 text-lg font-[1000] text-slate-900 dark:text-white">
-                {totalAmount.income > 0 ? `${Math.min(spendCoverage, 999)}% spent` : "No income yet"}
-              </p>
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      <div className="mt-8 grid grid-cols-1 gap-5 xl:grid-cols-[0.95fr_1.05fr] xl:gap-8">
-        <Card className="overflow-hidden rounded-[2rem] border-white bg-white/80 p-5 shadow-[0_30px_80px_-30px_rgba(15,23,42,0.16)] backdrop-blur-[40px] dark:border-white/5 dark:bg-slate-900/40 sm:p-8">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.35em] text-slate-400">
-                Quick Access
-              </p>
-              <h2 className="mt-2 text-2xl font-[1000] tracking-tighter text-slate-900 dark:text-white">
-                Fast Actions
-              </h2>
-            </div>
-            <div className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.25em] text-emerald-600 dark:text-emerald-300">
-              Frontline Controls
-            </div>
-          </div>
-
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {quickActions.map((action) => {
-              const Icon = action.icon;
-
-              return (
-                <button
-                  key={action.label}
-                  type="button"
-                  onClick={() => navigate(action.to)}
-                  className={`group rounded-[1.75rem] border bg-gradient-to-br p-5 text-left transition-all duration-500 hover:-translate-y-1 ${action.className}`}
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="rounded-2xl bg-white/70 p-3 text-slate-900 shadow-sm dark:bg-slate-950/40 dark:text-white">
-                      <Icon size={20} />
-                    </div>
-                    <MoveRight className="text-current transition-transform duration-500 group-hover:translate-x-1" size={18} />
-                  </div>
-                  <h3 className="mt-6 text-lg font-[1000] tracking-tight">{action.label}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-                    {action.description}
-                  </p>
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="mt-6 rounded-[1.75rem] border border-blue-500/15 bg-blue-500/10 p-5">
-            <div className="flex items-start gap-4">
-              <div className="rounded-2xl bg-white/80 p-3 text-blue-600 shadow-sm dark:bg-slate-950/40 dark:text-blue-300">
-                <ShieldCheck size={20} />
-              </div>
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-600 dark:text-blue-300">
-                  Smart Insight
-                </p>
-                <p className="mt-2 text-sm font-bold leading-relaxed text-slate-700 dark:text-slate-200">
-                  {totalAmount.netBalance >= 0
-                    ? "Positive balance detected. Keep expense growth lower than income momentum to preserve savings."
-                    : "Negative balance detected. Review recurring expense entries first to restore balance."}
-                </p>
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="overflow-hidden rounded-[2rem] border-white bg-white/80 p-5 shadow-[0_30px_80px_-30px_rgba(15,23,42,0.16)] backdrop-blur-[40px] dark:border-white/5 dark:bg-slate-900/40 sm:p-8">
+      <div className="mt-8 sm:mt-10 grid grid-cols-1 gap-5 xl:grid-cols-[1.1fr_0.9fr] xl:gap-8">
+        <WaveChart /> 
+         <Card className="overflow-hidden rounded-[2rem] border-white bg-white/80 p-5 shadow-[0_30px_80px_-30px_rgba(15,23,42,0.16)] backdrop-blur-[40px] dark:border-white/5 dark:bg-slate-900/40 sm:p-8">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.35em] text-slate-400">
@@ -601,6 +410,131 @@ const Dashboard = () => {
           </div>
         </Card>
       </div>
+
+      <div className="mt-8 grid grid-cols-1 gap-5 xl:grid-cols-[1.1fr_0.9fr] xl:gap-8">
+      
+         <Card className="overflow-hidden rounded-[2rem] border-white bg-white/80 p-5 shadow-[0_30px_80px_-30px_rgba(15,23,42,0.16)] backdrop-blur-[40px] dark:border-white/5 dark:bg-slate-900/40 sm:p-8">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.35em] text-slate-400">
+                Quick Access
+              </p>
+              <h2 className="mt-2 text-2xl font-[1000] tracking-tighter text-slate-900 dark:text-white">
+                Fast Actions
+              </h2>
+            </div>
+            <div className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.25em] text-emerald-600 dark:text-emerald-300">
+              Frontline Controls
+            </div>
+          </div>
+
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {quickActions.map((action) => {
+              const Icon = action.icon;
+
+              return (
+                <button
+                  key={action.label}
+                  type="button"
+                  onClick={() => navigate(action.to)}
+                  className={`group rounded-[1.75rem] border bg-gradient-to-br p-5 text-left transition-all duration-500 hover:-translate-y-1 ${action.className}`}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="rounded-2xl bg-white/70 p-3 text-slate-900 shadow-sm dark:bg-slate-950/40 dark:text-white">
+                      <Icon size={20} />
+                    </div>
+                    <MoveRight className="text-current transition-transform duration-500 group-hover:translate-x-1" size={18} />
+                  </div>
+                  <h3 className="mt-6 text-lg font-[1000] tracking-tight">{action.label}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                    {action.description}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="mt-6 rounded-[1.75rem] border border-blue-500/15 bg-blue-500/10 p-5">
+            <div className="flex items-start gap-4">
+              <div className="rounded-2xl bg-white/80 p-3 text-blue-600 shadow-sm dark:bg-slate-950/40 dark:text-blue-300">
+                <ShieldCheck size={20} />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-600 dark:text-blue-300">
+                  Smart Insight
+                </p>
+                <p className="mt-2 text-sm font-bold leading-relaxed text-slate-700 dark:text-slate-200">
+                  {totalAmount.netBalance >= 0
+                    ? "Positive balance detected. Keep expense growth lower than income momentum to preserve savings."
+                    : "Negative balance detected. Review recurring expense entries first to restore balance."}
+                </p>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+
+        <Card className="overflow-hidden rounded-[2rem] border-white bg-white/80 p-5 shadow-[0_30px_80px_-30px_rgba(15,23,42,0.16)] backdrop-blur-[40px] dark:border-white/5 dark:bg-slate-900/40 sm:p-8">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.35em] text-slate-400">
+                Capital Health
+              </p>
+              <h2 className="mt-2 text-2xl font-[1000] tracking-tighter text-slate-900 dark:text-white">
+                Savings Rate
+              </h2>
+            </div>
+            <div className="rounded-2xl bg-indigo-500/10 p-3 text-indigo-600 dark:text-indigo-300">
+              <Gauge size={24} />
+            </div>
+          </div>
+
+          <div className="mt-6 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-4xl font-[1000] tracking-tighter text-slate-900 dark:text-white">
+                {savingsProgress}%
+              </p>
+              <p className="mt-2 max-w-sm text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                {insightText}
+              </p>
+            </div>
+            <div className="hidden h-24 w-24 items-center justify-center rounded-full border-[10px] border-indigo-500/15 text-lg font-[1000] text-indigo-600 dark:flex dark:text-indigo-300">
+              {savingsProgress}%
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <ProgressBar
+              value={savingsProgress}
+              max={100}
+              variant={totalAmount.netBalance >= 0 ? "success" : "danger"}
+              size="lg"
+            />
+          </div>
+
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 dark:border-white/5 dark:bg-slate-950/40">
+              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400">
+                Net Balance
+              </p>
+              <p className="mt-2 flex items-center gap-1 text-lg font-[1000] text-slate-900 dark:text-white">
+                <IndianRupee size={15} />
+                {formatMoney(totalAmount.netBalance)}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 dark:border-white/5 dark:bg-slate-950/40">
+              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400">
+                Coverage
+              </p>
+              <p className="mt-2 text-lg font-[1000] text-slate-900 dark:text-white">
+                {totalAmount.income > 0 ? `${Math.min(spendCoverage, 999)}% spent` : "No income yet"}
+              </p>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+
 
       <div className="mt-12 flex items-center justify-center gap-3 text-slate-400 dark:text-slate-600 sm:gap-6">
         <div className="h-px w-8 bg-slate-200 dark:bg-slate-800 sm:w-16" />
