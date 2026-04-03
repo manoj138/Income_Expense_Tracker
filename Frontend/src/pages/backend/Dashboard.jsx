@@ -1,22 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../../context/AuthContext";
-import Card from "../../components/common/Card";
-import { Api } from "../../components/common/Api/api";
+import { useNavigate } from "react-router-dom";
 import {
   ArrowDownCircle,
+  ArrowRight,
   ArrowUpCircle,
   CircleUserRound,
   Crown,
+  Gauge,
   IndianRupee,
+  MoveRight,
+  Plus,
+  Receipt,
+  ShieldCheck,
   TrendingUp,
   Wallet,
   Zap,
 } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+import Card from "../../components/common/Card";
+import { Api } from "../../components/common/Api/api";
 import WaveChart from "../../components/project/WaveChart";
-import { useNavigate } from "react-router-dom";
 import PageLoader from "../../components/common/PageLoader";
+import ProgressBar from "../../components/common/ProgressBar";
+import { formatDateString } from "../../utils/formatDate";
 
 const formatMoney = (value) => Number(value || 0).toLocaleString("en-IN");
+const formatChange = (value) => `${value > 0 ? "+" : ""}${Number(value || 0).toFixed(1)}%`;
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -25,6 +34,12 @@ const Dashboard = () => {
     income: 0,
     expense: 0,
     netBalance: 0,
+    savingsRate: 0,
+    monthlyStats: {
+      income: { current: 0, previous: 0, change: 0 },
+      expense: { current: 0, previous: 0, change: 0 },
+    },
+    recentTransactions: [],
   });
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -63,15 +78,61 @@ const Dashboard = () => {
     return <PageLoader />;
   }
 
+  const savingsProgress = Math.min(Math.max(Number(totalAmount.savingsRate || 0), 0), 100);
+  const spendCoverage = totalAmount.income > 0
+    ? Math.round((Number(totalAmount.expense || 0) / Number(totalAmount.income || 1)) * 100)
+    : 0;
+  const insightText = totalAmount.netBalance >= 0
+    ? "Income is covering expenses with a positive cash position."
+    : "Expenses have crossed income. Review recent outflow and rebalance quickly.";
+
+  const monthlyCards = [
+    {
+      key: "income",
+      label: "Income Momentum",
+      amount: totalAmount.monthlyStats?.income?.current,
+      previous: totalAmount.monthlyStats?.income?.previous,
+      change: totalAmount.monthlyStats?.income?.change,
+      tone: "emerald",
+    },
+    {
+      key: "expense",
+      label: "Expense Pressure",
+      amount: totalAmount.monthlyStats?.expense?.current,
+      previous: totalAmount.monthlyStats?.expense?.previous,
+      change: totalAmount.monthlyStats?.expense?.change,
+      tone: "rose",
+    },
+  ];
+
+  const quickActions = [
+    {
+      label: "Add Income",
+      icon: Plus,
+      description: "Record a fresh income entry",
+      to: "/admin/income/create",
+      className:
+        "from-emerald-500/15 to-emerald-500/5 border-emerald-500/20 text-emerald-700 dark:text-emerald-200",
+    },
+    {
+      label: "Add Expense",
+      icon: Receipt,
+      description: "Track an outgoing payment",
+      to: "/admin/expense/create",
+      className:
+        "from-rose-500/15 to-rose-500/5 border-rose-500/20 text-rose-700 dark:text-rose-200",
+    },
+  ];
+
   return (
     <>
-      <header className="mb-6 sm:mb-8 flex flex-col justify-between gap-4 sm:gap-5 xl:flex-row xl:items-center">
+      <header className="mb-6 flex flex-col justify-between gap-4 sm:mb-8 sm:gap-5 xl:flex-row xl:items-center">
         <div className="animate-in fade-in slide-in-from-left-8 duration-1000">
           <div className="flex items-start gap-4 sm:gap-6">
             <div className="relative group shrink-0">
               <div className="rounded-3xl bg-gradient-to-tr from-blue-600 to-indigo-500 p-1 shadow-2xl transition-transform duration-500 group-hover:scale-105">
-                <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-[1.2rem] border-4 border-white bg-slate-100 dark:bg-slate-800 text-blue-600 dark:text-blue-400 dark:border-slate-900 sm:h-20 sm:w-20 transition-all duration-500 group-hover:rotate-6 shadow-inner">
-                  <div className="p-3 bg-blue-500/10 dark:bg-blue-500/20 rounded-full">
+                <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-[1.2rem] border-4 border-white bg-slate-100 text-blue-600 shadow-inner transition-all duration-500 group-hover:rotate-6 dark:border-slate-900 dark:bg-slate-800 dark:text-blue-400 sm:h-20 sm:w-20">
+                  <div className="rounded-full bg-blue-500/10 p-3 dark:bg-blue-500/20">
                     <CircleUserRound size={36} strokeWidth={1.5} className="sm:size-10" />
                   </div>
                 </div>
@@ -81,25 +142,25 @@ const Dashboard = () => {
 
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                <h1 className="text-xl font-[1000] leading-tight tracking-[-0.05em] text-slate-900 sm:text-3xl md:text-4xl lg:text-5xl dark:text-white">
+                <h1 className="text-xl font-[1000] leading-tight tracking-[-0.05em] text-slate-900 dark:text-white sm:text-3xl md:text-4xl lg:text-5xl">
                   Welcome,{" "}
-                  <span className="bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 bg-clip-text text-transparent italic tracking-tighter uppercase shrink-0">
+                  <span className="shrink-0 bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 bg-clip-text text-transparent italic tracking-tighter uppercase">
                     {userData?.name?.split(" ")[0] || "Chief"}
                   </span>
                 </h1>
-                <Crown className="hidden animate-bounce text-amber-500 sm:block shrink-0" size={24} />
+                <Crown className="hidden shrink-0 animate-bounce text-amber-500 sm:block" size={24} />
               </div>
-              <p className="mt-2 flex flex-wrap items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 sm:mt-3 sm:text-[10px] sm:tracking-[0.35em] dark:text-slate-500">
-                <Zap size={14} className="fill-current text-blue-500 shrink-0" />
+              <p className="mt-2 flex flex-wrap items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 sm:mt-3 sm:text-[10px] sm:tracking-[0.35em]">
+                <Zap size={14} className="shrink-0 fill-current text-blue-500" />
                 Quantum Assets Control Hub
               </p>
             </div>
           </div>
         </div>
 
-        <div className="flex max-w-full items-center gap-3 self-start rounded-[1.5rem] sm:rounded-[2rem] border border-white bg-white/70 px-4 py-3 sm:px-5 sm:py-4 shadow-2xl backdrop-blur-2xl transition-all dark:border-white/5 dark:bg-slate-900/40">
+        <div className="flex max-w-full items-center gap-3 self-start rounded-[1.5rem] border border-white bg-white/70 px-4 py-3 shadow-2xl backdrop-blur-2xl transition-all dark:border-white/5 dark:bg-slate-900/40 sm:rounded-[2rem] sm:px-5 sm:py-4">
           <div className="relative h-3 w-3 shrink-0">
-            <div className="absolute inset-0 rounded-full bg-blue-500 opacity-75 animate-ping" />
+            <div className="absolute inset-0 animate-ping rounded-full bg-blue-500 opacity-75" />
             <div className="relative h-3 w-3 rounded-full bg-blue-600 shadow-[0_0_15px_#2563eb]" />
           </div>
           <div className="min-w-0">
@@ -107,7 +168,8 @@ const Dashboard = () => {
               Active System State
             </span>
             <span className="block truncate text-xs font-bold uppercase tracking-tighter text-slate-900 dark:text-white">
-              {sessionLabel}<span className="hidden sm:inline"> / ID: {user.id}</span>
+              {sessionLabel}
+              <span className="hidden sm:inline"> / ID: {user.id}</span>
             </span>
           </div>
         </div>
@@ -127,9 +189,11 @@ const Dashboard = () => {
               <span className="rounded-full border border-emerald-500/20 bg-emerald-500/20 px-3 py-1.5 text-[9px] font-[1000] uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-200">
                 System Inflow
               </span>
-              <div className="flex items-center gap-1 text-emerald-700 animate-pulse dark:text-emerald-200">
+              <div className="flex items-center gap-1 animate-pulse text-emerald-700 dark:text-emerald-200">
                 <TrendingUp size={12} />
-                <span className="text-[8px] font-black tracking-widest">+14.2%</span>
+                <span className="text-[8px] font-black tracking-widest">
+                  {formatChange(totalAmount.monthlyStats?.income?.change)}
+                </span>
               </div>
             </div>
           </div>
@@ -145,7 +209,7 @@ const Dashboard = () => {
               </h3>
             </div>
 
-            <div className="mt-5 sm:mt-8 flex items-center justify-between border-t border-white/10 pt-5 sm:pt-8 opacity-40">
+            <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-5 opacity-40 sm:mt-8 sm:pt-8">
               <p className="text-[10px] font-mono tracking-[0.3em] text-black dark:text-white">
                 CREDIT PROTOCOL
               </p>
@@ -175,8 +239,11 @@ const Dashboard = () => {
               <span className="rounded-full border border-rose-500/20 bg-rose-500/20 px-3 py-1.5 text-[9px] font-[1000] uppercase tracking-[0.2em] text-rose-600 animate-pulse dark:text-rose-200">
                 Live Drain
               </span>
-              <div className="h-1 w-12 overflow-hidden rounded-full bg-white/20">
-                <div className="h-full w-[45%] bg-rose-400" />
+              <div className="flex items-center gap-1 text-rose-600 dark:text-rose-200">
+                <TrendingUp size={12} />
+                <span className="text-[8px] font-black tracking-widest">
+                  {formatChange(totalAmount.monthlyStats?.expense?.change)}
+                </span>
               </div>
             </div>
           </div>
@@ -192,7 +259,7 @@ const Dashboard = () => {
               </h3>
             </div>
 
-            <div className="mt-5 sm:mt-8 flex items-center justify-between border-t border-white/10 pt-5 sm:pt-8 opacity-40">
+            <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-5 opacity-40 sm:mt-8 sm:pt-8">
               <p className="text-[10px] font-mono tracking-[0.3em] text-black/80 dark:text-white">
                 DEBIT PROTOCOL
               </p>
@@ -209,7 +276,7 @@ const Dashboard = () => {
           />
         </Card>
 
-        <Card className="group relative overflow-hidden rounded-[2rem] border-0 bg-slate-950 p-5 shadow-[0_40px_100px_-20px_rgba(79,70,229,0.3)] transition-all duration-700 hover:-translate-y-2 dark:bg-indigo-600 sm:rounded-[2.5rem] sm:p-8 sm:col-span-2 lg:col-span-1">
+        <Card className="group relative overflow-hidden rounded-[2rem] border-0 bg-slate-950 p-5 shadow-[0_40px_100px_-20px_rgba(79,70,229,0.3)] transition-all duration-700 hover:-translate-y-2 dark:bg-indigo-600 sm:col-span-2 sm:rounded-[2.5rem] sm:p-8 lg:col-span-1">
           <div className="relative z-20 flex items-start justify-between gap-4">
             <div className="rounded-3xl border border-white/20 bg-indigo-300/30 p-4 text-indigo-400 backdrop-blur-xl transition-transform duration-500 group-hover:rotate-6 dark:bg-white/10 dark:text-white sm:p-5">
               <Wallet size={34} strokeWidth={2.5} />
@@ -220,7 +287,7 @@ const Dashboard = () => {
                 Net Assets
               </div>
               <div className="h-1.5 w-12 overflow-hidden rounded-full bg-indigo-600/20 dark:bg-indigo-500/20">
-                <div className="h-full w-[70%] bg-indigo-400 animate-pulse" />
+                <div className="h-full bg-indigo-400 animate-pulse" style={{ width: `${savingsProgress}%` }} />
               </div>
             </div>
           </div>
@@ -236,11 +303,11 @@ const Dashboard = () => {
               </h3>
             </div>
 
-            <div className="mt-5 sm:mt-8 flex items-center justify-between border-t border-white/10 pt-5 sm:pt-8 opacity-40">
+            <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-5 opacity-40 sm:mt-8 sm:pt-8">
               <div className="flex items-center gap-2">
                 <div className="h-1.5 w-1.5 animate-ping rounded-full bg-indigo-700" />
                 <p className="text-[10px] font-mono tracking-[0.3em] text-black/80 dark:text-white">
-                  **** 2026
+                  SAVINGS {savingsProgress}%
                 </p>
               </div>
               <p className="text-[9px] font-black uppercase italic tracking-widest text-black/80 dark:text-white">
@@ -259,6 +326,280 @@ const Dashboard = () => {
 
       <div className="mt-8 sm:mt-10">
         <WaveChart />
+      </div>
+
+      <div className="mt-8 grid grid-cols-1 gap-5 xl:grid-cols-[1.1fr_0.9fr] xl:gap-8">
+        <Card className="overflow-hidden rounded-[2rem] border-white bg-white/80 p-5 shadow-[0_30px_80px_-30px_rgba(15,23,42,0.16)] backdrop-blur-[40px] dark:border-white/5 dark:bg-slate-900/40 sm:p-8">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.35em] text-slate-400">
+                Monthly Snapshot
+              </p>
+              <h2 className="mt-2 text-2xl font-[1000] tracking-tighter text-slate-900 dark:text-white">
+                Income vs Expense
+              </h2>
+            </div>
+            <div className="rounded-full border border-blue-500/20 bg-blue-500/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.3em] text-blue-600 dark:text-blue-300">
+              Current Month
+            </div>
+          </div>
+
+          <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
+            {monthlyCards.map((item) => {
+              const isPositive = Number(item.change || 0) >= 0;
+              const isIncomeCard = item.key === "income";
+
+              return (
+                <div
+                  key={item.key}
+                  className={`rounded-[1.75rem] border p-5 ${
+                    item.tone === "emerald"
+                      ? "border-emerald-500/20 bg-emerald-500/10"
+                      : "border-rose-500/20 bg-rose-500/10"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
+                        {item.label}
+                      </p>
+                      <div className="mt-3 flex items-center gap-1 text-slate-900 dark:text-white">
+                        <IndianRupee size={16} className="shrink-0" />
+                        <span className="text-2xl font-[1000] tracking-tight">
+                          {formatMoney(item.amount)}
+                        </span>
+                      </div>
+                    </div>
+                    <div
+                      className={`rounded-full px-3 py-2 text-[10px] font-black uppercase tracking-[0.25em] ${
+                        isPositive
+                          ? isIncomeCard
+                            ? "bg-emerald-600 text-white"
+                            : "bg-rose-600 text-white"
+                          : "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
+                      }`}
+                    >
+                      {formatChange(item.change)}
+                    </div>
+                  </div>
+
+                  <div className="mt-5 flex items-center justify-between text-xs font-bold text-slate-500 dark:text-slate-400">
+                    <span>Last month</span>
+                    <span className="flex items-center gap-1">
+                      <IndianRupee size={12} />
+                      {formatMoney(item.previous)}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+
+        <Card className="overflow-hidden rounded-[2rem] border-white bg-white/80 p-5 shadow-[0_30px_80px_-30px_rgba(15,23,42,0.16)] backdrop-blur-[40px] dark:border-white/5 dark:bg-slate-900/40 sm:p-8">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.35em] text-slate-400">
+                Capital Health
+              </p>
+              <h2 className="mt-2 text-2xl font-[1000] tracking-tighter text-slate-900 dark:text-white">
+                Savings Rate
+              </h2>
+            </div>
+            <div className="rounded-2xl bg-indigo-500/10 p-3 text-indigo-600 dark:text-indigo-300">
+              <Gauge size={24} />
+            </div>
+          </div>
+
+          <div className="mt-6 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-4xl font-[1000] tracking-tighter text-slate-900 dark:text-white">
+                {savingsProgress}%
+              </p>
+              <p className="mt-2 max-w-sm text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                {insightText}
+              </p>
+            </div>
+            <div className="hidden h-24 w-24 items-center justify-center rounded-full border-[10px] border-indigo-500/15 text-lg font-[1000] text-indigo-600 dark:flex dark:text-indigo-300">
+              {savingsProgress}%
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <ProgressBar
+              value={savingsProgress}
+              max={100}
+              variant={totalAmount.netBalance >= 0 ? "success" : "danger"}
+              size="lg"
+            />
+          </div>
+
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 dark:border-white/5 dark:bg-slate-950/40">
+              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400">
+                Net Balance
+              </p>
+              <p className="mt-2 flex items-center gap-1 text-lg font-[1000] text-slate-900 dark:text-white">
+                <IndianRupee size={15} />
+                {formatMoney(totalAmount.netBalance)}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 dark:border-white/5 dark:bg-slate-950/40">
+              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400">
+                Coverage
+              </p>
+              <p className="mt-2 text-lg font-[1000] text-slate-900 dark:text-white">
+                {totalAmount.income > 0 ? `${Math.min(spendCoverage, 999)}% spent` : "No income yet"}
+              </p>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <div className="mt-8 grid grid-cols-1 gap-5 xl:grid-cols-[0.95fr_1.05fr] xl:gap-8">
+        <Card className="overflow-hidden rounded-[2rem] border-white bg-white/80 p-5 shadow-[0_30px_80px_-30px_rgba(15,23,42,0.16)] backdrop-blur-[40px] dark:border-white/5 dark:bg-slate-900/40 sm:p-8">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.35em] text-slate-400">
+                Quick Access
+              </p>
+              <h2 className="mt-2 text-2xl font-[1000] tracking-tighter text-slate-900 dark:text-white">
+                Fast Actions
+              </h2>
+            </div>
+            <div className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.25em] text-emerald-600 dark:text-emerald-300">
+              Frontline Controls
+            </div>
+          </div>
+
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {quickActions.map((action) => {
+              const Icon = action.icon;
+
+              return (
+                <button
+                  key={action.label}
+                  type="button"
+                  onClick={() => navigate(action.to)}
+                  className={`group rounded-[1.75rem] border bg-gradient-to-br p-5 text-left transition-all duration-500 hover:-translate-y-1 ${action.className}`}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="rounded-2xl bg-white/70 p-3 text-slate-900 shadow-sm dark:bg-slate-950/40 dark:text-white">
+                      <Icon size={20} />
+                    </div>
+                    <MoveRight className="text-current transition-transform duration-500 group-hover:translate-x-1" size={18} />
+                  </div>
+                  <h3 className="mt-6 text-lg font-[1000] tracking-tight">{action.label}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                    {action.description}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="mt-6 rounded-[1.75rem] border border-blue-500/15 bg-blue-500/10 p-5">
+            <div className="flex items-start gap-4">
+              <div className="rounded-2xl bg-white/80 p-3 text-blue-600 shadow-sm dark:bg-slate-950/40 dark:text-blue-300">
+                <ShieldCheck size={20} />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-600 dark:text-blue-300">
+                  Smart Insight
+                </p>
+                <p className="mt-2 text-sm font-bold leading-relaxed text-slate-700 dark:text-slate-200">
+                  {totalAmount.netBalance >= 0
+                    ? "Positive balance detected. Keep expense growth lower than income momentum to preserve savings."
+                    : "Negative balance detected. Review recurring expense entries first to restore balance."}
+                </p>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="overflow-hidden rounded-[2rem] border-white bg-white/80 p-5 shadow-[0_30px_80px_-30px_rgba(15,23,42,0.16)] backdrop-blur-[40px] dark:border-white/5 dark:bg-slate-900/40 sm:p-8">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.35em] text-slate-400">
+                Live Feed
+              </p>
+              <h2 className="mt-2 text-2xl font-[1000] tracking-tighter text-slate-900 dark:text-white">
+                Recent Transactions
+              </h2>
+            </div>
+            <button
+              type="button"
+              onClick={() => navigate("/admin/income")}
+              className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-[10px] font-black uppercase tracking-[0.25em] text-slate-600 transition-colors hover:border-blue-200 hover:text-blue-600 dark:border-white/10 dark:bg-slate-950/40 dark:text-slate-300"
+            >
+              Open Ledger <ArrowRight size={14} />
+            </button>
+          </div>
+
+          <div className="mt-6 space-y-3">
+            {totalAmount.recentTransactions?.length > 0 ? (
+              totalAmount.recentTransactions.map((item) => {
+                const isIncome = item.type === "income";
+
+                return (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between gap-4 rounded-[1.5rem] border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/5 dark:bg-slate-950/40"
+                  >
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div
+                        className={`rounded-2xl p-3 ${
+                          isIncome
+                            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300"
+                            : "bg-rose-500/10 text-rose-600 dark:text-rose-300"
+                        }`}
+                      >
+                        {isIncome ? <ArrowDownCircle size={18} /> : <ArrowUpCircle size={18} />}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-[1000] text-slate-900 dark:text-white">
+                          {item.title}
+                        </p>
+                        <div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                          <span>{item.method}</span>
+                          <span className="h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-600" />
+                          <span>{formatDateString(item.date)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      <p
+                        className={`flex items-center justify-end gap-1 text-sm font-[1000] ${
+                          isIncome ? "text-emerald-600 dark:text-emerald-300" : "text-rose-600 dark:text-rose-300"
+                        }`}
+                      >
+                        <IndianRupee size={14} />
+                        {formatMoney(item.amount)}
+                      </p>
+                      <p className="mt-1 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                        {isIncome ? "Income" : "Expense"}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="rounded-[1.75rem] border border-dashed border-slate-300/80 bg-slate-50/60 p-8 text-center dark:border-white/10 dark:bg-slate-950/30">
+                <p className="text-sm font-bold text-slate-500 dark:text-slate-400">
+                  No recent transactions yet.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => navigate("/admin/income/create")}
+                  className="mt-4 inline-flex items-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-[10px] font-black uppercase tracking-[0.25em] text-white"
+                >
+                  Add First Entry <ArrowRight size={14} />
+                </button>
+              </div>
+            )}
+          </div>
+        </Card>
       </div>
 
       <div className="mt-12 flex items-center justify-center gap-3 text-slate-400 dark:text-slate-600 sm:gap-6">

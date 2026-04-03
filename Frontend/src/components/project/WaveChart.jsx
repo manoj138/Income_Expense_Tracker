@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Api, handleApiError } from "../common/Api/api";
 import {
-  AreaChart,
   Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
 } from "recharts";
-import { useToast } from "../common/Toast";
 import { Activity } from "lucide-react";
+import { Api, handleApiError } from "../common/Api/api";
+import { useToast } from "../common/Toast";
 
 const WaveChart = () => {
   const { addToast } = useToast();
   const [chart, setChart] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   const fetchAll = async () => {
     try {
@@ -23,8 +22,6 @@ const WaveChart = () => {
       setChart(res.data.data.chartData);
     } catch (error) {
       handleApiError(error, null, addToast);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -32,56 +29,65 @@ const WaveChart = () => {
     fetchAll();
   }, []);
 
-  // Custom Tooltip Style (Profile Style)
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white/80 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-white/10 p-4 rounded-2xl shadow-2xl">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">{label}</p>
+        <div className="rounded-2xl border border-slate-200 bg-white/80 p-4 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/90">
+          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
+            {label}
+          </p>
           <div className="flex flex-col gap-1">
             <div className="flex items-center justify-between gap-8">
               <span className="text-xs font-bold text-emerald-500">Income</span>
-              <span className="text-sm font-black dark:text-white">₹{payload[0].value.toLocaleString()}</span>
+              <span className="text-sm font-black dark:text-white">
+                Rs. {payload[0]?.value?.toLocaleString?.() || 0}
+              </span>
             </div>
             <div className="flex items-center justify-between gap-8">
               <span className="text-xs font-bold text-rose-500">Expense</span>
-              <span className="text-sm font-black dark:text-white">₹{payload[1].value.toLocaleString()}</span>
+              <span className="text-sm font-black dark:text-white">
+                Rs. {payload[1]?.value?.toLocaleString?.() || 0}
+              </span>
             </div>
           </div>
         </div>
       );
     }
+
     return null;
   };
 
   return (
-    <div className="group relative overflow-hidden bg-white/50 dark:bg-slate-900/40 backdrop-blur-[40px] border border-white dark:border-white/5 rounded-[2rem] sm:rounded-[3.5rem] p-5 sm:p-10 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] transition-all duration-700">
-      
-      {/* Header Section */}
-      <div className="flex flex-wrap justify-between items-start gap-3 mb-6 sm:mb-10">
+    <div className="group relative overflow-hidden rounded-[2rem] border border-white bg-white/50 p-5 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] backdrop-blur-[40px] transition-all duration-700 dark:border-white/5 dark:bg-slate-900/40 sm:rounded-[3.5rem] sm:p-10">
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-3 sm:mb-10">
         <div>
-          <div className="flex items-center gap-2 text-blue-600 mb-1">
+          <div className="mb-1 flex items-center gap-2 text-blue-600">
             <Activity size={16} className="animate-pulse" />
-            <span className="text-[9px] font-[1000] uppercase tracking-[0.3em]">Analytics Engine</span>
+            <span className="text-[9px] font-[1000] uppercase tracking-[0.3em]">
+              Analytics Engine
+            </span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-[1000] text-slate-900 dark:text-white tracking-tighter">
+          <h2 className="text-xl font-[1000] tracking-tighter text-slate-900 dark:text-white sm:text-2xl">
             Cash <span className="italic text-blue-600">Flow</span>
           </h2>
         </div>
         <div className="flex gap-2">
-           <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">
-              <div className="h-1.5 w-1.5 bg-emerald-500 rounded-full" />
-              <span className="text-[8px] font-black text-emerald-600 dark:text-emerald-400 uppercase">Inflow</span>
-           </div>
-           <div className="flex items-center gap-1.5 px-3 py-1 bg-rose-500/10 rounded-full border border-rose-500/20">
-              <div className="h-1.5 w-1.5 bg-rose-500 rounded-full" />
-              <span className="text-[8px] font-black text-rose-600 dark:text-rose-400 uppercase">Outflow</span>
-           </div>
+          <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1">
+            <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            <span className="text-[8px] font-black uppercase text-emerald-600 dark:text-emerald-400">
+              Inflow
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5 rounded-full border border-rose-500/20 bg-rose-500/10 px-3 py-1">
+            <div className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+            <span className="text-[8px] font-black uppercase text-rose-600 dark:text-rose-400">
+              Outflow
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Chart Container */}
-      <div className="h-[220px] sm:h-[320px] w-full relative z-10">
+      <div className="relative z-10 h-[220px] w-full sm:h-[320px]">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={chart} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>
@@ -95,44 +101,52 @@ const WaveChart = () => {
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" opacity={0.1} />
-            <XAxis 
-              dataKey="date" 
-              axisLine={false} 
-              tickLine={false} 
-              tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 700 }}
+            <XAxis
+              dataKey="date"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#94a3b8", fontSize: 10, fontWeight: 700 }}
               dy={10}
             />
-            <YAxis 
-              axisLine={false} 
-              tickLine={false} 
-              tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 700 }}
+            <YAxis
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#94a3b8", fontSize: 10, fontWeight: 700 }}
             />
-            <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#3b82f6', strokeWidth: 1, strokeDasharray: '5 5' }} />
+            <Tooltip
+              content={<CustomTooltip />}
+              cursor={{ stroke: "#3b82f6", strokeWidth: 1, strokeDasharray: "5 5" }}
+            />
             <Area
-              type="monotone"
+              type="natural"
               dataKey="income"
               stroke="#10b981"
-              strokeWidth={4}
+              strokeWidth={5}
               fillOpacity={1}
               fill="url(#colorIncome)"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              activeDot={{ r: 6, fill: "#10b981", stroke: "#ffffff", strokeWidth: 2 }}
               animationDuration={2000}
             />
             <Area
-              type="monotone"
+              type="natural"
               dataKey="expense"
               stroke="#f43f5e"
-              strokeWidth={4}
+              strokeWidth={5}
               fillOpacity={1}
               fill="url(#colorExpense)"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              activeDot={{ r: 6, fill: "#f43f5e", stroke: "#ffffff", strokeWidth: 2 }}
               animationDuration={2000}
             />
           </AreaChart>
         </ResponsiveContainer>
       </div>
 
-      {/* Background Decorative Icon */}
       <Activity
-        className="absolute -bottom-10 -left-10 text-blue-500/5 dark:text-blue-500/10 pointer-events-none group-hover:scale-110 transition-transform duration-1000"
+        className="pointer-events-none absolute -bottom-10 -left-10 text-blue-500/5 transition-transform duration-1000 group-hover:scale-110 dark:text-blue-500/10"
         size={200}
       />
     </div>
