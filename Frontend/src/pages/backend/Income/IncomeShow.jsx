@@ -80,52 +80,54 @@ const IncomeShow = () => {
             </div>
           </div>
 
-          <Card className="w-full max-w-lg min-h-fit bg-white/80 dark:bg-slate-950/40 backdrop-blur-[40px] border border-white dark:border-white/10 rounded-[3.5rem] p-8 md:p-12 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.12)] relative transition-all duration-500 my-4 print:shadow-none print:my-0">
+          <Card className="w-full max-w-lg min-h-fit bg-white/80 dark:bg-slate-950/40 backdrop-blur-[40px] border border-white dark:border-white/10 rounded-[2.5rem] p-6 md:p-8 shadow-xl relative transition-all duration-500 my-2 print:shadow-none print:my-0">
     
-            {/* Cut-out effects */}
-            <div className="absolute top-1/2 -left-5 w-10 h-10 bg-[#F8FAFC] dark:bg-[#020617] rounded-full border-r border-white dark:border-white/10 z-10 print:hidden" />
-            <div className="absolute top-1/2 -right-5 w-10 h-10 bg-[#F8FAFC] dark:bg-[#020617] rounded-full border-l border-white dark:border-white/10 z-10 print:hidden" />
+    {/* Cut-out effects - Slightly smaller */}
+    <div className="absolute top-1/2 -left-4 w-8 h-8 bg-[#F8FAFC] dark:bg-[#020617] rounded-full border-r border-white dark:border-white/10 z-10 print:hidden" />
+    <div className="absolute top-1/2 -right-4 w-8 h-8 bg-[#F8FAFC] dark:bg-[#020617] rounded-full border-l border-white dark:border-white/10 z-10 print:hidden" />
 
-            {/* Header */}
-            <div className="text-center border-b border-dashed border-slate-200 dark:border-white/10 pb-8 mb-8">
-                <div className="inline-flex relative mb-6">
-                    <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center border border-emerald-500/20">
-                        <Receipt size={32} className="text-emerald-600" strokeWidth={1.5} />
-                    </div>
-                    <Sparkles className="absolute -top-1 -right-1 text-emerald-400 animate-pulse" size={18} />
-                </div>
-                <h2 className="text-2xl font-[1000] text-slate-900 dark:text-white tracking-tighter uppercase italic">Transaction Confirmed</h2>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mt-3 bg-slate-100 dark:bg-slate-800 px-4 py-1.5 rounded-full inline-block tracking-tighter">
-                   REF-ID: #{income?.income_id?.toString().padStart(6, '0') || 'N/A'}
-                </p>
+    {/* Header - Reduced padding and margin */}
+    <div className="text-center border-b border-dashed border-slate-200 dark:border-white/10 pb-5 mb-5">
+        <div className="inline-flex relative mb-3">
+            <div className="w-14 h-14 bg-emerald-500/10 rounded-full flex items-center justify-center border border-emerald-500/20">
+                <Receipt size={24} className="text-emerald-600" strokeWidth={1.5} />
             </div>
+            <Sparkles className="absolute -top-1 -right-1 text-emerald-400 animate-pulse" size={14} />
+        </div>
+        <h2 className="text-xl font-[1000] text-slate-900 dark:text-white tracking-tighter uppercase italic">Confirmed</h2>
+        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-2 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full inline-block">
+            ID: #{income?.income_id?.toString().padStart(6, '0') || 'N/A'}
+        </p>
+    </div>
 
-            {/* Amount Section */}
-            <div className="space-y-8">
-                <div className="relative group overflow-hidden bg-gradient-to-br from-emerald-500/5 to-transparent dark:from-emerald-500/10 dark:to-transparent rounded-[2.5rem] p-8 text-center border border-emerald-500/10 shadow-inner">
-                    <p className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-2 italic opacity-70">Amount Credited</p>
-                    <h3 className="text-4xl sm:text-5xl md:text-6xl font-[1000] text-emerald-600 dark:text-emerald-400 tracking-[calc(-0.05em)] tabular-nums">
-                        ₹{Number(income?.income_amount || 0).toLocaleString()}
-                    </h3>
-                </div>
+    {/* Amount Section - Compressed Padding */}
+    <div className="space-y-5">
+        <div className="relative group overflow-hidden bg-gradient-to-br from-emerald-500/5 to-transparent dark:from-emerald-500/10 rounded-2xl p-5 text-center border border-emerald-500/10">
+            <p className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-1 opacity-70">Amount Credited</p>
+            <h3 className="text-3xl sm:text-4xl md:text-5xl font-[1000] text-emerald-600 dark:text-emerald-400 tracking-tight tabular-nums">
+                ₹{Number(income?.income_amount || 0).toLocaleString()}
+            </h3>
+        </div>
 
-                <div className="grid grid-cols-1 gap-5 px-2">
-                    <DetailRow icon={<Tag size={14}/>} label="Source" value={income?.income_source} />
-                    <DetailRow icon={<CreditCard size={14}/>} label="Method" value={income?.income_method} isCaps />
-                    <DetailRow icon={<Calendar size={14}/>} label="Date" value={formatDateString(income?.income_date)} />
-                    <DetailRow icon={<Clock size={14}/>} label="Time" value={income?.income_time} />
-                </div>
+        {/* Details - Tighter Gap */}
+        <div className="grid grid-cols-1 gap-3 px-1">
+            <DetailRow icon={<Tag size={12}/>} label="Source" value={income?.income_source} />
+            <DetailRow icon={<CreditCard size={12}/>} label="Method" value={income?.income_method} isCaps />
+            <div className="grid grid-cols-2 gap-4"> {/* Date & Time side-by-side to save vertical space */}
+                <DetailRow icon={<Calendar size={12}/>} label="Date" value={formatDateString(income?.income_date)} />
+                <DetailRow icon={<Clock size={12}/>} label="Time" value={income?.income_time} />
             </div>
+        </div>
+    </div>
 
-
-            {/* Verification Footer */}
-            <div className="mt-10 text-center border-t border-dashed border-slate-200 dark:border-white/10 pt-8">
-                <div className="flex items-center justify-center gap-2 bg-emerald-500/5 dark:bg-emerald-500/10 py-3 rounded-2xl border border-emerald-500/10">
-                     <CheckCircle2 size={16} className="text-emerald-500" />
-                     <p className="text-[11px] font-[1000] text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.3em] italic">System Verified Record</p>
-                </div>
-            </div>
-          </Card>
+    {/* Verification Footer - Reduced Margin/Padding */}
+    <div className="mt-6 text-center border-t border-dashed border-slate-200 dark:border-white/10 pt-5">
+        <div className="flex items-center justify-center gap-2 bg-emerald-500/5 dark:bg-emerald-500/10 py-2 rounded-xl border border-emerald-500/10">
+             <CheckCircle2 size={14} className="text-emerald-500" />
+             <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest italic">Verified Record</p>
+        </div>
+    </div>
+</Card>
           
           <p className="mt-12 text-[10px] font-black text-slate-400/30 uppercase tracking-[1.5em] select-none">Auth Protocol v2.0</p>
     </div>

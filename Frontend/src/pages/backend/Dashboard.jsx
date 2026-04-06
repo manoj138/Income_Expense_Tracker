@@ -169,7 +169,6 @@ const Dashboard = () => {
             </span>
             <span className="block truncate text-xs font-bold uppercase tracking-tighter text-slate-900 dark:text-white">
               {sessionLabel}
-              <span className="hidden sm:inline"> / ID: {user.id}</span>
             </span>
           </div>
         </div>
